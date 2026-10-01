@@ -2,7 +2,7 @@
 
 ## What the reader needs
 
-The first reader is a design team that has to brief from the narrative, followed by the approvals it has to clear, like a brand committee or a city council vote. They need to feel the world specifically enough to make decisions from it, so every sentence should drive something downstream: a material, a light, a name, a service moment.
+The first reader is a design team that has to brief from the narrative, followed by the approvals it has to clear, like a brand committee or a city council vote. They need to feel the world specifically enough to make decisions from it, so every sentence should lead to something downstream: a material, a light, a name, a service moment.
 
 ## Modes
 

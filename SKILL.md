@@ -14,6 +14,21 @@ Three pulls cause most of it. The model picks the likely word, and likely means 
 
 This skill answers each pull. Facts replace generic words. A named reader replaces restating. A stated position replaces hedging. A separate edit pass catches drift. The full list of tells, with the fix for each, is in `references/tells.md`.
 
+## When instructions conflict
+
+One rule sits above everything: never invent a fact, quote or number, even when the user asks for one. Leave a marked bracket instead, like `[number of households served]`.
+
+Below that, when two instructions disagree, the higher one wins:
+
+1. What the user asks for in the conversation.
+2. Quotes, names, numbers and technical terms, exactly as given.
+3. The user's own writing samples or style guide.
+4. Rules that block.
+5. Rules that warn.
+6. The skill's default voice.
+
+A user who says "keep the em dashes, they're our house style" keeps them. A quote that says "really" stays as written, and so do a company called Seamless and a "statistically significant" result.
+
 ## Step 1: Find the material
 
 Find first, write second. Before drafting a sentence, find the physical version of the idea, the detail nobody could fake, and the behaviors behind any dynamic you want to name. Collect names, numbers, quotes, places, dates and what happened. When a sentence would name a general category (hotels, outdoor brands, placemaking projects), find the specific instance first.
@@ -33,7 +48,7 @@ The answers set every choice that follows: where to open, how long to run, how h
 
 - `references/voice.md`, always. It covers where the voice sits, how it works, the moves to reach for, the modes, and the checks.
 - The format guide in `references/formats/` that matches the job. Each one names its sequence of modes and its check settings. Current guides: `linkedin.md` (posts, headlines and About sections), `letter.md` (cover letters, outreach and referral blurbs), `proposal.md` (proposals and civic documents), `think-piece.md` (essays, articles and newsletters), `brand-narrative.md` (brand stories and personas) and `workshop.md` (decks and activity instructions). If none matches, work from the four answers.
-- Anything the user supplies: samples of their own writing, a voice guide or a brand guide. Follow it on word choice, heat and rhythm, while the tells and the check still apply. Use it in the conversation only, and never save it into the skill.
+- Anything the user supplies: samples of their own writing, a voice guide or a brand guide. Follow it on word choice, heat and rhythm. Where it uses something a rule blocks, like em dashes, it wins, as "When instructions conflict" says; the rest of the check still applies. Use it in the conversation only, and never save it into the skill.
 - `references/samples.md`. The user's own passages, when they share them, come first and set the sound. Read every sample for what it does, never as wording to reuse.
 
 ## Step 4: Draft
@@ -77,7 +92,11 @@ The full check is written out rule by rule in `references/tells.md`, so it runs 
 python scripts/check_voice.py --surface linkedin draft.txt
 ```
 
-Set the surface to match the piece: `letter` for letters and outreach, `blurb` for referral blurbs, `linkedin` for posts, About sections and headlines, `resume`, or `general` for proposals, think pieces, brand narratives and workshop materials. Rewrite every block. Fix every warning, or clear it with a stated reason. Repeat until nothing blocks.
+Set the surface to match the piece: `letter` for letters and outreach, `blurb` for referral blurbs, `linkedin` for posts, About sections and headlines, `resume`, or `general` for proposals, think pieces, brand narratives and workshop materials. A run without `--surface` uses `general`.
+
+The check reads the draft the way a reader does. It joins lines that wrap mid-sentence, and it skips words inside quotation marks and block quotes, along with capitalized names in the middle of a sentence, so a source's words and a name inside a sentence don't count against the draft. A name the check still flags, like one that opens a sentence, stays as written under the order above. Habits that good writers also use, like long forms ("it is"), lists of three, "just" and hedge words, warn once per draft, and only when the draft uses them well above the rate in edited human writing.
+
+Rewrite every block, except where the order in "When instructions conflict" keeps the words: a quote, name, number or technical term exactly as given, or something the user asked for. Say which block you kept and why. When the user's own instructions, samples or guide allow something a rule blocks, run the check with `--skip` and the rule's ID (`--skip R01` for dashes) and tell the user which rules are off. Fix every warning, or clear it with a stated reason. Repeat until nothing blocks.
 
 The check only finds surface patterns, so a clean result doesn't mean clean writing. Step 5 is the real check.
 

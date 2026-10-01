@@ -1,12 +1,12 @@
 # Workshop materials
 
-## What the room needs
+## What participants need
 
-Participants need to feel safe, energized and directed. The facilitator knows more than the room and doesn't perform it. The structure stays invisible, so people feel guided instead of managed.
+Participants need to feel safe, energized and directed. The facilitator knows more than the group and doesn't perform it. The structure stays invisible, so people feel guided instead of managed.
 
 ## Modes
 
-A workshop deck runs in facilitative mode throughout, with persuasive slides at the framing moments. Instructions printed for the room run as plain, operational steps.
+A workshop deck runs in facilitative mode throughout, with persuasive slides at the framing moments. Instructions printed for participants run as plain, operational steps.
 
 - Put the instruction inside an invitation: "Pick a face. Talk about a day in the life." Make it clear enough that nobody has to ask what to do, and open enough that the output belongs to them.
 - Build safety through informality at the start: "No such thing as bad ideas or stupid questions."
@@ -24,7 +24,7 @@ A workshop deck runs in facilitative mode throughout, with persuasive slides at 
 
 - Imperatives with no reason to follow them: "Imagine a brand that transforms your business".
 - Instructions a participant has to decode.
-- The facilitator's internal method names on anything the room sees. Describe what the activity does.
+- The facilitator's internal method names on anything participants see. Describe what the activity does.
 
 ## Script check
 

@@ -33,7 +33,7 @@ Use short sentences for proof points and diagnoses, and longer ones for narrativ
 9. **Earn the credential.** Build the shared world first and give the proof second. A credential that arrives cold sounds like a consultant announcing value.
 10. **Numbers end stories.** Give the trajectory, then the number. "Turned a 12% sales decline into 9% growth in four quarters" is a story with a fact inside it, while "grew 9%" alone is a floating fact.
 11. **Name what's broken.** State the problem the reader feels but hasn't put into words. It has to be specific enough to prove knowledge, honest enough to believe (never a straw man) and collegial enough to keep the reader in the conversation.
-12. **Humor does work.** It builds trust, earns the right to a harder truth, and resets a room that's gone formal. It always arrives beside a real claim, and never appears in cold diagnostic writing.
+12. **Humor does work.** It builds trust, earns the right to a harder truth, and resets a meeting that's gone formal. It always arrives beside a real claim, and never appears in cold diagnostic writing.
 
 ## Moves to reach for
 

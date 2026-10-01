@@ -1,6 +1,6 @@
 # Plainspeak Writer
 
-Plainspeak Writer is a Claude skill for writing that reads like a sharp person wrote it. It drafts and edits specific outputs, catches the habits that make text sound machine-made, and checks every draft against more than 60 rules before you see it.
+Plainspeak Writer is a Claude skill for writing that reads like a sharp person wrote it. It drafts and edits specific outputs, catches the habits that make text sound machine-made, and checks every draft against more than 90 rules before you see it.
 
 It handles these outputs:
 
@@ -90,7 +90,9 @@ Every rule is written out in plain words in `references/tells.md`, so Claude can
 python scripts/check_voice.py --surface linkedin draft.txt
 ```
 
-Set the surface to match the piece: `letter` for letters and outreach, `blurb` for referral blurbs, `linkedin` for posts, About sections and headlines, `resume`, or `general` for proposals, think pieces, brand narrative and workshop material. HARD hits block the draft, and WARN hits stay only with a stated reason. Run `--list-rules` to see every rule.
+Set the surface to match the piece: `letter` for letters and outreach, `blurb` for referral blurbs, `linkedin` for posts, About sections and headlines, `resume`, or `general` for proposals, think pieces, brand narrative and workshop material. A run without `--surface` uses `general`. HARD hits block the draft, and WARN hits stay only with a stated reason. Run `--list-rules` to see every rule.
+
+The check skips words inside quotation marks and block quotes, and capitalized names in the middle of a sentence, so a source's words and a company's name inside a sentence don't count against your draft. Habits good writers share, like lists of three and the word "just", warn only when a draft uses them more than nine in ten pieces of edited human writing do. When your own samples or style guide use something a rule blocks, like em dashes, turn that rule off with `--skip R01`.
 
 A clean check means the draft has none of the surface patterns. Whether it's good writing is still the edit pass's call.
 

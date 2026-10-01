@@ -16,7 +16,7 @@ The move: state both sides honestly and at full length, then land the consequenc
 **Frederick Douglass, "What to the Slave Is the Fourth of July?" (1852)**
 > This Fourth [of] July is yours, not mine. You may rejoice, I must mourn.
 
-The move: speak to the real audience in the room, and use the occasion they came for as the evidence against them. Traits: provocative, accountable.
+The move: speak to the audience in front of you, and use the occasion they came for as the evidence against them. Traits: provocative, accountable.
 
 **Thoreau, Walden (1854)**
 > Our life is frittered away by detail. An honest man has hardly need to count more than his ten fingers, or in extreme cases he may add his ten toes, and lump the rest.
