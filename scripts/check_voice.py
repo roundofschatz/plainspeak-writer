@@ -27,6 +27,8 @@ How the check reads a draft:
   - label lines ("Budget: $40K.") are skipped by the colon check
   - common habits (R09, R41, P10, V01, V02) warn once per draft, and only
     when the draft runs above the rate in edited human writing
+  - the last three items of a list of four or more aren't counted as a list
+    of three
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -45,7 +47,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.4"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.4.1"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -197,6 +199,111 @@ def _not_a_number_range(line, m):
     if hit == "--":
         return not ((not before or before[-1].isspace()) and line[m.end():m.end() + 1].isalpha())
     return True
+
+
+# A sentence breaks into stretches at these marks. A list never runs across
+# one, so only a comma in the same stretch can belong to the same list. A
+# period counts when a space, a comma or the end of the line follows it, so
+# the point in "3.5 miles" doesn't.
+_STRETCH_BREAK = re.compile(r"[;:!?()\[\]\u2012-\u2015\u2026]|\.(?=[\s,]|$)|--|\s-\s")
+# Words that open a phrase or a clause and never a plain list item:
+# prepositions, then words like "which" and "when".
+_PHRASE_OPENERS = frozenset(
+    "in on at by for with from to of into onto over under about through during without within across among "
+    "between against toward towards upon including like unlike despite beyond throughout along around above "
+    "below besides except per via plus "
+    "that which who whom whose where when while because since although though if unless as whereas until once "
+    "after before whether than".split())
+_JOINING_WORDS = frozenset("and or but nor so yet".split())
+# With the words above, the ways a clause or a phrase starts after a comma:
+# subjects, helping verbs and adverbs.
+_CLAUSE_STARTERS = _PHRASE_OPENERS | _JOINING_WORDS | frozenset(
+    "i we you he she it they there "
+    "is are was were be been being am has have had do does did will would can could should may might must shall "
+    "not never always often sometimes also even especially particularly usually mostly mainly then now still "
+    "only just both either neither each such rather perhaps let".split())
+_ARTICLES = frozenset("a an the this these those my our your his her its their".split())
+_IRREGULAR_PARTICIPLES = frozenset(
+    "born built chosen drawn driven given grown held known led made seen shown taken written".split())
+# Adverbs and times that stand before a comma as a short tag: "However,",
+# "More importantly,", "Last year,", "Two years ago,".
+_TAG_WORDS = frozenset(
+    "however moreover nevertheless nonetheless furthermore meanwhile instead otherwise likewise therefore thus "
+    "hence indeed still yet also again too so first second third next last here there together back forward "
+    "ahead perhaps maybe overall altogether anyway granted sometimes often always never "
+    "now then today tonight yesterday tomorrow later earlier ago afterward afterwards soon "
+    "year years month months week weeks day days quarter season spring summer fall autumn winter morning "
+    "afternoon evening night weekend".split())
+
+
+def _words_of(s):
+    """The words of a piece of text, in lower case, with the punctuation
+    left out."""
+    return re.findall(r"[^\W_]+(?:['-][^\W_]+)*", s.lower())
+
+
+def _is_participle(w):
+    """True for an -ing or -ed word ("showing", "based") and for an
+    irregular one ("driven", "built"), never for "bring" or "speed"."""
+    return (w in _IRREGULAR_PARTICIPLES
+            or bool(re.fullmatch(r"[a-z']*[aeiouy][a-z']*(?:ing|ed)", w)) and not w.endswith("eed"))
+
+
+def _starts_clause(w):
+    """True when a word can start a clause or a phrase: a joining word, a
+    subject, a preposition, a helping verb, an adverb like "especially", a
+    contraction ("we've", "don't") or an -ing or -ed word."""
+    return (w.split("'")[0] in _CLAUSE_STARTERS or bool(re.search(r"(?:n't|'re|'ve|'ll|'d|'m)$", w))
+            or _is_participle(w))
+
+
+def _is_list_of_three(line, m):
+    """False when the three items end a longer list ("roads, bike lanes, bus
+    shelters, and street trees"), which isn't a list of three. The pattern
+    can match from partway through "bike lanes", so this reads back to the
+    comma before the match. The host is the words from that comma to the
+    first list comma, and the lead is the words before that comma, back to
+    the comma or the break before them. When both read as plain items, the
+    list is longer than three.
+
+    The three still count when the host starts a clause or a phrase ("and the
+    trails", "we shipped apples", "showing wit"), when it runs to six words or
+    more and the next item opens on a different word, or when it holds a
+    preposition the three items hang off ("a row for dashes, colons and
+    brackets"). They count too when the lead ends an earlier list ("...and
+    writers,"), opens with a preposition or a word like "when" ("In March,",
+    "When I joined,"), is an -ing or -ed phrase ("Founded in 1920,") or is a
+    short adverb or time ("However,", "Last year,").
+
+    It reads m.string, the block with the words inside quotes blanked, so a
+    comma inside a quote never counts."""
+    first, _, rest = m.group(0).partition(",")
+    stretch = _STRETCH_BREAK.split(m.string[max(0, m.start() - 1000):m.start()] + first)[-1]
+    pieces = re.split(r",\s+", stretch)
+    if len(pieces) < 2:
+        return True                       # no comma before the list in this stretch
+    host, lead = _words_of(pieces[-1]), _words_of(pieces[-2])
+    if not host or not lead:
+        return True                       # a bracket, a quote or an abbreviation sits before the comma
+    if _starts_clause(host[0]):
+        return True
+    second = _words_of(rest)
+    same_opener = bool(second) and second[0] == host[0] and host.count(host[0]) == 1
+    if len(host) >= 6 and not same_opener:
+        return True
+    if (host[0] in _ARTICLES and _PHRASE_OPENERS.intersection(host[1:-1])
+            and second and second[0] not in _ARTICLES):
+        return True
+    if len(pieces) == 2:                  # the lead opens the stretch
+        if lead[0] in _JOINING_WORDS and len(lead) > 1:
+            lead = lead[1:]               # "But frankly," reads as "frankly,"
+    elif lead[0] in ("and", "or") and len(lead) > 1 and not _starts_clause(lead[1]):
+        return True                       # "...and writers," ends an earlier list
+    if lead[0] in _PHRASE_OPENERS:
+        return True
+    if _is_participle(lead[0]) and len(lead) > 1 and (lead[1] in _PHRASE_OPENERS or lead[1] in _ARTICLES):
+        return True
+    return len(lead) <= 4 and (lead[-1] in _TAG_WORDS or (lead[-1].endswith("ly") and len(lead[-1]) > 4))
 
 
 # ---------------------------------------------------------------- HARD ----
@@ -526,10 +633,11 @@ RATE = [
          r"\bjust\b",
          "keep it only if it changes the meaning",
          rate=1.5),
+    # Since 1.4.1, keep drops the last three items of a list of four or more.
     rule("V01", "judgment", "list of three",
          r"(?<!, )\b[\w'-]+(?:\s[\w'-]+){0,3},\s[\w'-]+(?:\s[\w'-]+){0,3},?\s(?:and|or)\s[\w'-]+(?:\s[\w'-]+){0,3}\b",
          "fine when each item is specific and does work; a crutch when it stands in for logic",
-         rate=8.0),
+         rate=8.0, keep=_is_list_of_three),
 ]
 
 # V02 judged per 1,000 words: runs of three or more short sentences. Long
