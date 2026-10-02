@@ -257,6 +257,12 @@ def _starts_clause(w):
             or _is_participle(w))
 
 
+def _is_ly_word(w):
+    """True for a word of five letters or more that ends in -ly, as most
+    adverbs do ("ideally", "frankly")."""
+    return len(w) > 4 and w.endswith("ly")
+
+
 def _is_list_of_three(line, m):
     """False when the three items end a longer list ("roads, bike lanes, bus
     shelters, and street trees"), which isn't a list of three. The pattern
@@ -267,13 +273,13 @@ def _is_list_of_three(line, m):
     list is longer than three.
 
     The three still count when the host starts a clause or a phrase ("and the
-    trails", "we shipped apples", "showing wit"), when it runs to six words or
-    more and the next item opens on a different word, or when it holds a
-    preposition the three items hang off ("a row for dashes, colons and
-    brackets"). They count too when the lead ends an earlier list ("...and
-    writers,"), opens with a preposition or a word like "when" ("In March,",
-    "When I joined,"), is an -ing or -ed phrase ("Founded in 1920,") or is a
-    short adverb or time ("However,", "Last year,").
+    trails", "we shipped apples", "showing wit", "ideally with schools"), when
+    it runs to six words or more and the next item opens on a different word,
+    or when it holds a preposition the three items hang off ("a row for
+    dashes, colons and brackets"). They count too when the lead ends an
+    earlier list ("...and writers,"), opens with a preposition or a word like
+    "when" ("In March,", "When I joined,"), is an -ing or -ed phrase ("Founded
+    in 1920,") or is a short adverb or time ("However,", "Last year,").
 
     It reads m.string, the block with the words inside quotes blanked, so a
     comma inside a quote never counts."""
@@ -287,6 +293,8 @@ def _is_list_of_three(line, m):
         return True                       # a bracket, a quote or an abbreviation sits before the comma
     if _starts_clause(host[0]):
         return True
+    if len(host) > 1 and _is_ly_word(host[0]) and host[1] in _PHRASE_OPENERS:
+        return True                       # "ideally with schools": an adverb, then a preposition
     second = _words_of(rest)
     same_opener = bool(second) and second[0] == host[0] and host.count(host[0]) == 1
     if len(host) >= 6 and not same_opener:
@@ -303,7 +311,7 @@ def _is_list_of_three(line, m):
         return True
     if _is_participle(lead[0]) and len(lead) > 1 and (lead[1] in _PHRASE_OPENERS or lead[1] in _ARTICLES):
         return True
-    return len(lead) <= 4 and (lead[-1] in _TAG_WORDS or (lead[-1].endswith("ly") and len(lead[-1]) > 4))
+    return len(lead) <= 4 and (lead[-1] in _TAG_WORDS or _is_ly_word(lead[-1]))
 
 
 # ---------------------------------------------------------------- HARD ----
