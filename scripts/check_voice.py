@@ -700,7 +700,7 @@ WARN += [
     # (V05, V06).
     rule("V07", "judgment", "skills claim that names nothing",
          r"\b(?:I|I've|I'm|I'd|My|We|We've|We're|Our)\b[^.!?]*[.!?]",
-         "name the tool, the number, the audience or the example, from the user's material or a bracket",
+         "name the tool, the number, the audience or the example the user gave, or cut the claim",
          surfaces=LRLB, pos="sentence", ci=False, keep=_names_nothing),
 ]
 

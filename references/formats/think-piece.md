@@ -10,10 +10,10 @@ A think piece opens insightful, builds insightful, pays off with one sentence th
 
 ## Shape
 
-- Open with a scene, a hard fact or the claim itself, and state the position by the end of the second paragraph. The scene and the fact come from the user's material. When there isn't one, open on the claim, or leave a bracket like `[a moment you saw this happen]` and ask for it.
+- Open with a scene, a hard fact or the claim itself, and state the position by the end of the second paragraph. The scene and the fact come from the user's material. When there isn't one, open on the claim.
 - Make one argument per piece. A second argument deserves its own piece.
 - Let the argument set the order: the claim, the evidence, the strongest objection, the answer to it, and what it means for the reader.
-- Go deep on one or two of the user's cases instead of listing ten examples. A single case told with names, numbers and what happened persuades more than a survey. Tell it with what the user gave, and don't fill in between their facts: a timeline, a cause, a count or a detail they didn't mention goes in a bracket or stays out.
+- Go deep on one or two of the user's cases instead of listing ten examples. A single case told with names, numbers and what happened persuades more than a survey. Tell it with what the user gave, and don't fill in between their facts: a timeline, a cause, a count or a detail they didn't mention stays out.
 - Name the user's sources in the text ("the company's CEO said from the stage...") so the reader can check them.
 - Land the argument on the one sentence it earned, then close in a plain conversational line on what it means for the reader. No moral, no summary.
 - Make the title the claim, stated plainly.

@@ -19,16 +19,15 @@ Plainspeak Writer answers each pull: facts replace generic words, a named reader
 
 ## How it works
 
-Every piece runs through eight steps:
+Every piece runs through seven steps:
 
-1. **Find the material.** Names, numbers, places and what happened, from what you give it. Gaps get a marked bracket for you to fill, and the skill never invents a fact or a quote, or fills one in from memory.
+1. **List your facts.** Names, numbers, places, quotes and what happened, from what you give it, written down once before drafting. The piece uses only that list. The skill never invents a fact or a quote, fills one in from memory or guesses, and a fact the piece can't do without gets a bracket for you to fill.
 2. **Answer four questions.** Who's reading and what the piece has to survive, what they should do or believe after, the position and its strongest objection, and how much heat the subject can take.
 3. **Load the right files.** The voice guide, the format guide for the job, and any samples or brand guide you share.
-4. **Draft** in a plain, specific, warm voice that writes toward the reader.
+4. **Draft** from the list, in a plain, warm voice that writes toward the reader.
 5. **Edit in a separate pass.** It checks for the tells and for what the voice should produce, reads each paragraph aloud and cuts what repeats.
 6. **Run the full check.** Rules that block and warnings that need a stated reason.
-7. **Check every fact against the source.** Each name, number, date and quote is in your material or in a bracket.
-8. **Deliver** the piece, with an edit log when you ask for one, and a list of the brackets to fill.
+7. **Deliver** the piece, with an edit log when you ask for one, and a list of the brackets to fill.
 
 ## What's in the folder
 

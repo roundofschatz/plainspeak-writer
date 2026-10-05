@@ -6,9 +6,9 @@ The first reader is a design team that has to brief from the narrative, followed
 
 ## Modes
 
-A brand narrative runs in expressive mode throughout, with insightful passages where the brand idea shows up as a position. This is the one format where full creative intensity is the running mode instead of a single move.
+A brand narrative runs in expressive mode throughout, with insightful passages where the brand idea shows up as a position. This is the one format where full creative intensity is the running mode instead of a single move. The intensity is in the language; the facts, scenes and details are only the ones the user gave.
 
-- Put the sensory before the strategic, and the physical image before the abstract idea. The sensory details come from the user's material: what they told you the place, the product or the people are like. Don't add a smell, a time of day, a habit or a local fact they didn't give. Leave a bracket or ask.
+- Put the sensory before the strategic, and the physical image before the abstract idea. The sensory details come from the user's material: what they told you the place, the product or the people are like. Don't add a smell, a time of day, a habit or a local fact they didn't give. Write from what they gave, and ask for more.
 - Find, in the user's material, the one physical thing the brand grows from, like a stone hearth in a family's mountain cabin, and let it organize everything else. When the image is right, the design decisions trace back to it. If the material has no such thing, ask for one.
 - Mix short sentences that land an emotion with longer ones that move the story.
 - Make every name say something and open the next idea, so the name tells the design team what to build.

@@ -16,7 +16,7 @@ A workshop deck runs in facilitative mode throughout, with persuasive slides at 
 
 ## Facts in the materials
 
-Participants act on what the materials say, so every fact in them comes from the user. A rule of thumb or a figure the user didn't give, like a letter height for a reading distance, goes in a bracket for the facilitator to fill or confirm: `[letter height for this reading distance]`. So does anything about the group the user didn't mention, like who made the signs or what usually comes up.
+Participants act on what the materials say, so every fact in them comes from the user. A rule of thumb or a figure the user didn't give, like a letter height for a reading distance, goes in a bracket for the facilitator to fill or confirm: `[letter height for this reading distance]`. Anything about the group or the place the user didn't mention, like who made the signs or what usually comes up, stays out of the script.
 
 ## Samples
 

@@ -34,6 +34,14 @@ After a rerun of the 30 test jobs on the changes above, 8 of 60 drafts made with
 - Changed: Step 8. A note naming a fact to find gives no definition, figure or threshold; one had given the 30% line for rent burden.
 - Changed: Step 6. `--keep` takes the words the user chose for a fact as well as names (one draft wrote "raised four feet" for the user's "elevated four feet"), and a pattern the user's samples use stays in the piece with `--skip`, instead of coming out for the user to put back (one draft dropped the dashes the user's sample posts use).
 
+After a second rerun, 4 of 60 drafts still had a fact the user never gave. Each new rule had cut the count, but the skill's own instructions to make every sentence concrete kept pulling the other way. This round takes those out instead of adding more:
+- Changed: Step 1 of SKILL.md. The skill writes the user's facts down once, in a scratch note, and drafts only from that list. Anything not on it stays out of the piece and the notes, and a thin brief makes a short, plain piece.
+- Removed: the fact check that ran at the end as Step 7. Nothing made it run and nothing showed that it had; the list at the start replaces it. Deliver is Step 7 again, and a line the user requires goes in exactly as it stands on the list.
+- Removed: the lines that asked for detail the user hadn't given: "make every sentence name something the reader can check or picture", "find the physical version of an idea first", specificity as an effect to revise toward, and "let the metaphor generate specifics". Under voice.md move 3, the skill keeps the general word when the user gave no instance.
+- Changed: no guesses, in a bracket or out of one. A bracket names only a fact the piece can't stand without, like a date. Brackets that held a suggested value ("a [20]-minute call", a suggested program name) are gone, and a reason or process the user didn't give isn't written at all.
+- Changed: letter.md. A cover letter runs 250 to 450 words, and one under 250 fails; on a thin brief it reaches the length with labeled slots for the writer's own proof.
+- Changed: the think-piece, brand-narrative, proposal and workshop guides to match, two rows in tells.md, and V07's fix, which now cuts a claim the user gave nothing for.
+
 ## 1.4.1 · A list of four isn't a list of three
 Why: V01 counted the last three items of a longer list as a list of three. Its pattern only refused a match that started right after a comma, so a list of four or more still matched from partway through an item: "roads, bike lanes, bus shelters, and street trees" counted from "lanes". On October 1, 2026, a 498-word test letter got five V01 hits, 10.0 per 1,000 words, and a warning. A reader counts three lists of three in it, 6.0 per 1,000, which is under the limit of 8.
 

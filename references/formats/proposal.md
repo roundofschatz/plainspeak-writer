@@ -8,7 +8,7 @@ The reader is deciding whether to spend money on you, usually while comparing yo
 
 A proposal opens persuasive, frames the problem persuasively, runs its methodology in systematic mode and closes persuasive. A civic or public document opens persuasive, runs its structural sections as a cold diagnostic and closes persuasive.
 
-The persuasive order is diagnosis first, then the earned right to propose, then specific proof. Open on the place or the problem, prove understanding through specifics from the user's notes (what they saw on site, what they know about the market and the place), and present the capability as the natural answer. When the notes have none, leave a bracket for the user to fill rather than supplying local history or market facts from memory. The systematic sections should give the client a structure that holds, with parts they can repeat. Use the user's name for it when they gave one. When they didn't, describe what it does, or offer a name in a bracket for them to decide, like `[program name, for example "Ten-Minute Wild"]`. A clear name works where "the connection strategy" doesn't.
+The persuasive order is diagnosis first, then the earned right to propose, then specific proof. Open on the place or the problem, prove understanding through specifics from the user's notes (what they saw on site, what they know about the market and the place), and present the capability as the natural answer. When the notes have none, prove understanding with what the user did give, never with local history or market facts from memory. The systematic sections should give the client a structure that holds, with parts they can repeat. Use the user's name for it when they gave one. When they didn't, describe what it does; don't coin a name.
 
 Format is strategy. A downtown plan might ship as a coffee-table book, a small pitch might win on seven pages with no padding, and a public park plan might need sixty pages of case studies. Choose the form for what the proposal has to survive.
 
@@ -16,7 +16,7 @@ Format is strategy. A downtown plan might ship as a coffee-table book, a small p
 
 - Open with their situation in their own words, as the user's notes give them, and the result they're after. Don't add a worry, a motive or a constraint the notes don't state. Your firm's history belongs near the end, if anywhere.
 - State the recommendation plainly before the detail, so a reader who stops after the first page still knows what you're proposing.
-- Write scope as deliverables with dates. Use the user's dates, sizes and counts, and bracket the rest: "guest journey maps for [three] segments, delivered in [week 4]" can be checked and filled in, while "a deep dive into your guests" can't.
+- Write scope as deliverables with dates. Use the user's dates, sizes and counts, and bracket the ones the proposal can't stand without, naming what's missing: "guest journey maps for [number] segments, delivered in [week]" can be filled in and checked, while "a deep dive into your guests" can't.
 - Put the price in one clear place, as the user gave it or in a bracket. Default to one recommendation. Offer options only when the client asked for them or they differ in scope, and explain what each one leaves out.
 - List assumptions and exclusions in plain sentences, because they prevent the arguments that sink projects later.
 - Prove fit with named past work and a number or result from each project, all from the user's material. Two strong cases beat a page of logos. With none in the notes, leave `[past project and its result]`.
