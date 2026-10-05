@@ -26,7 +26,7 @@ A cover letter runs 250 to 350 words. Cold outreach runs 100 to 150, because the
 ## Rules for letters about the writer
 
 - Never name a gap, a shortcoming, a missing title or something the writer "has to learn." On a letter those read as reasons to say no.
-- Write the writer's own part in first person, at its real size: "I built", "I ran", "I cut" for what they did. When someone else led, name the lead: "My manager led the project, and I ran the survey of 200 customers." Never "contributed to" or "helped develop", and never a bigger verb than the user's own: "ran a survey" doesn't become "designed the research".
+- Write the writer's own part in first person, at its real size: "I built", "I ran", "I cut" for what they did. When someone else led, name the lead: "My manager led the project, and I ran the survey of 200 customers." Never "contributed to" or "helped develop", and never a bigger verb than the user's own: "ran a survey" doesn't become "designed the research". A strength stays at the user's size ("good with difficult customers" doesn't become "best with angry ones"), and a requirement from the posting isn't the writer's experience unless the user says it is.
 - End every claim on a result the user gave, or a bracket for one, never on the writer's difficulty or the old firm's flaws.
 - When the user shares letters they've sent, those are the model for sentences.
 

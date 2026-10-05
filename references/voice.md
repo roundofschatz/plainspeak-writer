@@ -45,7 +45,7 @@ Use one move at a time, dialed to the middle unless the format calls for full in
 |---|---|---|
 | Flat correction | Closes a misread and gives the right frame in one beat: "No. [the specific correction]." | Negotiating the correction, or correcting vaguely. |
 | Invention shown as it happens | Shows the gap and the step that filled it: "I walked the property as if I were filming a travel show about it." | "I invented a framework" with no gap shown, or hiding the work it built on. |
-| Personal stake as credential | "I've lived out of a camper van for three summers." A fact too specific to fake grounds the claim that follows, and it has to be one the user gave. | A stake the user never gave, one that's claimed without evidence, or one that's irrelevant to the argument. |
+| Personal stake as credential | "I've lived out of a camper van for three summers." A fact too specific to fake grounds the claim that follows, and it has to be one the user gave, at the size they gave it. | A stake the user never gave, an opinion turned into a scene the writer watched, one that's claimed without evidence, or one that's irrelevant to the argument. |
 | Flat superlative | Claims rank with no amplifier, after the evidence is on the page. | "Truly one of my best", or a superlative with nothing behind it. |
 | Contained repetition with a pivot | Up to four parallel clauses name the weight, then one sentence turns to what you'll do about it. | No pivot, five or more clauses, or items too small to earn the repetition. |
 | De-escalator | A light off-ramp after a charged passage. | Using it as a habit, or where nothing needed defusing. |

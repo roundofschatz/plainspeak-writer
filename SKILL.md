@@ -29,7 +29,7 @@ Below that, when two instructions disagree, the higher one wins:
 5. Rules that warn.
 6. The skill's default voice.
 
-A user who says "keep the em dashes, they're our house style" keeps them. A quote that says "really" stays as written, and so do a company called Seamless and a "statistically significant" result.
+A user who says "keep the em dashes, they're our house style" keeps them, and so does a user whose sample posts use them. A quote that says "really" stays as written, and so do a company called Seamless and a "statistically significant" result.
 
 ## Step 1: Find the material
 
@@ -62,8 +62,9 @@ Aim for the professional middle: direct, specific, warm, relational and never de
 - Make every sentence name something the reader can check or picture: a person, company, number, place, tool or result from the user's material, or a bracket for one.
 - Write toward the reader, with we, us and together or a real invitation. Never write as an applicant asking for consideration.
 - Take a position and state it flat, once. Never announce a position without stating it.
-- Meet the strongest objection in the open, with evidence. A provocation without the objection reads as a rant.
+- Meet the strongest objection in the open, with evidence the user gave. A provocation without the objection reads as a rant. When the argument needs a reason, a cause or a process the user didn't give (why customers decide, how the company does its work, why a result happened, what else a change improved), leave a bracket like `[why the program worked, if you know]` instead of supplying one.
 - Own the work at its real size. Use first person for what the writer did, credit others by name, and when something went wrong, say what it was and what it cost. Keep each part as big as the user said it was: "I ran a survey of 200" doesn't become "I designed the research", and "my manager led the project" stays in.
+- Keep the user's view a view. "My opinion from living in a few small towns" can become "I've lived in a few small towns, and I think...", never "in each of them I watched it happen". The same goes for strengths: "good with difficult customers" doesn't become "the customers I handle best", and a job posting's requirement isn't something the writer does unless the user says so.
 - Say each point once and trust the reader.
 - Connect the sentences, so each one hands the reader to the next. Use short sentences for stacked proof points and diagnoses, and longer ones for narrative and argument. A run of short, separate statements reads choppy.
 - End every claim about the work on a result the user gave, or a bracket for one, and end the piece somewhere only this piece could end. State results as firmly and as widely as the user did: "builds got 18% faster" doesn't become "faster for every engineer, forever".
@@ -96,7 +97,7 @@ python scripts/check_voice.py --surface linkedin draft.txt
 
 Set the surface to match the piece: `letter` for letters and outreach, `blurb` for referral blurbs, `linkedin` for posts, About sections and headlines, `resume`, or `general` for proposals, think pieces, brand narratives and workshop materials. A run without `--surface` uses `general`.
 
-The check reads the draft the way a reader does. It joins lines that wrap mid-sentence, and it skips words inside quotation marks and block quotes, along with capitalized names in the middle of a sentence, so a source's words and a name inside a sentence don't count against the draft. Pass the names and technical terms the user gave with `--keep`, separated by commas, and the check skips them anywhere, even where one opens a sentence or sits in a heading:
+The check reads the draft the way a reader does. It joins lines that wrap mid-sentence, and it skips words inside quotation marks and block quotes, along with capitalized names in the middle of a sentence, so a source's words and a name inside a sentence don't count against the draft. Pass the names, technical terms and other words the user chose for a fact (a measurement like "elevated four feet") with `--keep`, separated by commas, and the check skips them anywhere, even where one opens a sentence or sits in a heading:
 
 ```bash
 python scripts/check_voice.py --surface linkedin --keep "Seamless,statistically significant" draft.txt
@@ -104,7 +105,7 @@ python scripts/check_voice.py --surface linkedin --keep "Seamless,statistically 
 
 A name the check still flags stays as written under the order above. Habits that good writers also use, like long forms ("it is"), lists of three, "just" and hedge words, warn once per draft, and only when the draft uses them well above the rate in edited human writing.
 
-Rewrite every block, except where the order in "When instructions conflict" keeps the words: a quote, name, number or technical term exactly as given, or something the user asked for. Say which block you kept and why. When the user's own instructions, samples or guide allow something a rule blocks, run the check with `--skip` and the rule's ID (`--skip R01` for dashes) and tell the user which rules are off. Fix every warning, or clear it with a stated reason. Repeat until nothing blocks.
+Rewrite every block, except where the order in "When instructions conflict" keeps the words: a quote, name, number or technical term exactly as given, or something the user asked for. Say which block you kept and why. When the user's own instructions, samples or guide allow something a rule blocks, keep it in the piece, run the check with `--skip` and the rule's ID (`--skip R01` for dashes) and tell the user which rules are off. Don't take it out and leave it for the user to put back. Fix every warning, or clear it with a stated reason. Repeat until nothing blocks.
 
 The check only finds surface patterns, so a clean result doesn't mean clean writing. Step 5 is the real check.
 
@@ -117,13 +118,16 @@ These slip in most often:
 - A scene, a moment, a habit or a motive the user never described.
 - A true fact from memory: a place's weather, a law's date, an industry rule of thumb, a company's history.
 - A plan the user didn't make: a schedule, a meeting or call length, a program name, a deliverable's size.
-- A result or the writer's own part made bigger than the user said.
+- A reason, a cause or a process that makes the argument work: why people decide, how the company does its work, why a result happened, or a second benefit the user didn't name.
+- A plain-words explanation from memory: what a term means, what a test measures, what a number usually signals. Keep the user's term, and leave a bracket like `[plain explanation of systolic pressure]` or ask.
+- A result, a quote's claim or the writer's own part made bigger than the user said. A sentence that restates the user's quote keeps its size: "more miles than our racers do" doesn't become "more miles than anyone in our racing crowd".
+- A view turned into an event: an opinion the user formed becomes something the writer watched happen.
 
 Math on the user's own numbers is fine when it brings in no outside figure, and so is today's date from the computer's clock. Recheck any sentence you rewrote in Step 5 or 6, since a rewrite can add a fact.
 
 ## Step 8: Deliver
 
-Give the piece first. When the user is calibrating the skill or asks for it, add a short edit log after the piece: one line per change, saying what the draft had, what replaced it and why. Then list what the user must fill in or verify: each bracket, and any quote or name from a machine transcript. The notes follow the same rule as the piece. They add no fact, source, figure or example the user didn't give, so no "Gallup estimates..." and no "the law passed in 2018". When a fact would help, name the kind of fact to find, like "a source for the cost of turnover", and let the user find it.
+Give the piece first. When the user is calibrating the skill or asks for it, add a short edit log after the piece: one line per change, saying what the draft had, what replaced it and why. Then list what the user must fill in or verify: each bracket, and any quote or name from a machine transcript. The notes follow the same rule as the piece. They add no fact, source, figure or example the user didn't give, so no "Gallup estimates..." and no "the law passed in 2018". When a fact would help, name the kind of fact to find, like "a source for the cost of turnover", and let the user find it. Name it without supplying it: no definition, figure or threshold inside the note.
 
 ## Adding formats
 
