@@ -42,6 +42,11 @@ After a second rerun, 4 of 60 drafts still had a fact the user never gave. Each 
 - Changed: letter.md. A cover letter runs 250 to 450 words, and one under 250 fails; on a thin brief it reaches the length with labeled slots for the writer's own proof.
 - Changed: the think-piece, brand-narrative, proposal and workshop guides to match, two rows in tells.md, and V07's fix, which now cuts a claim the user gave nothing for.
 
+A 30-draft test of that round still had 4 drafts with a fact the user didn't give or a length the user asked for and didn't get, and the pieces ran short. The model that writes a draft doesn't see what it added; in every test, a fresh reader did. So:
+- Removed: "A thin brief makes a short, plain piece." It was read as permission to stop early, and a 200-word brand story came in at 93 words. Length now comes from what the user asked for and what the piece has to do, never from how much the user gave; a short brief can need a long piece.
+- Added: to Step 4, that a length the user asks for, or a format guide's range, is a requirement, met from the user's facts, the argument the piece has to make and labeled slots for the user's own material, never by stopping short or by adding facts.
+- Added: Step 7, a fresh reader. Where the skill can start a separate agent, a reader that sees only the user's message, the fact list and the draft quotes every line the message doesn't support, and the writer cuts or rewrites each one. Where it can't, the skill rereads the draft against the message line by line. Deliver is Step 8.
+
 ## 1.4.1 · A list of four isn't a list of three
 Why: V01 counted the last three items of a longer list as a list of three. Its pattern only refused a match that started right after a comma, so a list of four or more still matched from partway through an item: "roads, bike lanes, bus shelters, and street trees" counted from "lanes". On October 1, 2026, a 498-word test letter got five V01 hits, 10.0 per 1,000 words, and a warning. A reader counts three lists of three in it, 6.0 per 1,000, which is under the limit of 8.
 

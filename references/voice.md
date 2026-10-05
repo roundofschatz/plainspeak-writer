@@ -4,7 +4,7 @@ This is the voice the skill writes in. The examples show the moves, and none of 
 
 ## How to use this file
 
-**Calibration, not compliance.** A draft can avoid every tell and still fail. Check every draft against two questions at the same time. First, does it hit any failure named in `tells.md`? Second, does it produce the effects this file describes: warmth, writing toward the reader, a clear position, and humor that does real work? Revise toward the effects with the user's facts only. Specificity comes from what the user gave; when they gave little, the plain version is the right one, and every move below works only with material the user supplied.
+**Calibration, not compliance.** A draft can avoid every tell and still fail. Check every draft against two questions at the same time. First, does it hit any failure named in `tells.md`? Second, does it produce the effects this file describes: warmth, writing toward the reader, a clear position, and humor that does real work? Revise toward the effects with the user's facts only. Specificity comes from what the user gave, and every move below works only with material the user supplied.
 
 **Every example is an instance, not a template.** The passages and moves here show how the voice worked once, for one purpose. Compose against the reader and the piece in front of you. Never pull a sample in as fixed wording, and never fixate on one move across revisions.
 

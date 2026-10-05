@@ -19,7 +19,7 @@ Plainspeak Writer answers each pull: facts replace generic words, a named reader
 
 ## How it works
 
-Every piece runs through seven steps:
+Every piece runs through eight steps:
 
 1. **List your facts.** Names, numbers, places, quotes and what happened, from what you give it, written down once before drafting. The piece uses only that list. The skill never invents a fact or a quote, fills one in from memory or guesses, and a fact the piece can't do without gets a bracket for you to fill.
 2. **Answer four questions.** Who's reading and what the piece has to survive, what they should do or believe after, the position and its strongest objection, and how much heat the subject can take.
@@ -27,7 +27,8 @@ Every piece runs through seven steps:
 4. **Draft** from the list, in a plain, warm voice that writes toward the reader.
 5. **Edit in a separate pass.** It checks for the tells and for what the voice should produce, reads each paragraph aloud and cuts what repeats.
 6. **Run the full check.** Rules that block and warnings that need a stated reason.
-7. **Deliver** the piece, with an edit log when you ask for one, and a list of the brackets to fill.
+7. **Have a fresh reader check the facts.** Where Claude can start a separate agent, a reader that sees only your message, the fact list and the draft quotes anything you didn't give, and the writer cuts it.
+8. **Deliver** the piece, with an edit log when you ask for one, and a list of the brackets to fill.
 
 ## What's in the folder
 

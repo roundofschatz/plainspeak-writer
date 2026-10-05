@@ -21,7 +21,7 @@ Strong letters often move in four parts. They open on the reader's world, named 
 
 ## Length
 
-A cover letter runs 250 to 450 words, and one under 250 fails. On a thin brief, reach the length with labeled slots for the writer's own proof, like `[a second result: what you did and what changed]`, never with sentences the user's facts don't support. Cold outreach runs 100 to 150, because the reader didn't ask for it.
+A cover letter runs 250 to 450 words, and one under 250 fails. When the user's facts run out, reach the length with labeled slots for the writer's own proof, like `[a second result: what you did and what changed]`, never with sentences the user's facts don't support. Cold outreach runs 100 to 150, because the reader didn't ask for it.
 
 ## Rules for letters about the writer
 
