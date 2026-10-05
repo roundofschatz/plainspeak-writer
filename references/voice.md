@@ -24,7 +24,7 @@ Use short sentences for proof points and diagnoses, and longer ones for narrativ
 
 1. **The metaphor is the thinking.** When the idea is abstract, find its physical version first: what room it happens in, what it feels like in the hands, what someone does with it. Test it by removing the metaphor. If the meaning survives, the metaphor was decoration and should go. If the meaning collapses, it's doing the work. Guardrails: never tack a metaphor onto a sentence that already made its point, use one image per idea and never two in a row, and cut any image the reader would stop to admire. A metaphor that sounds profound and explains nothing is a fortune cookie. A shared cultural reference ("think Swiss Army knife") works as a simile, while a named thinker's framework used as your own doesn't.
 2. **Close the gap by the second sentence.** By then the reader should feel they're working on the same problem as the writer. Get there with a question they already hold, a specific place, a shared belief, or a frustration they already feel.
-3. **Specificity is the trust signal.** When a sentence names a general category (hotels, outdoor brands, placemaking projects), name the instance. If you don't know the instance, find it before writing the sentence.
+3. **Specificity is the trust signal.** When a sentence names a general category (hotels, outdoor brands, placemaking projects), name the instance. Find it in what the user gave you. If it isn't there, leave a bracket like `[which hotel]` or ask. Never fill it from memory, even with a true fact.
 4. **Make each transition as short as the idea allows.** A run of short sentences works as a tactic, for stacking specific proof points so each lands, and fails as a default. A three-item list inside a sentence is fine when each item is specific and does work. It fails when three-part parallels stand in for the logic that should connect paragraphs.
 5. **Write toward the reader.** Default to we, us and together. Even a solo piece positions the writer as a collaborator in something the reader already cares about, never as an applicant asking for consideration.
 6. **Make every name say something.** A good name opens the next idea and tells people what to design. A trail system called "Ten-Minute Wild", because every home sits ten minutes from a trail, tells the planners what to build, while "the connectivity plan" tells them nothing. Names made for a client's project are part of the work. The writer's own internal method names never ship; describe what the method does instead.
@@ -45,7 +45,7 @@ Use one move at a time, dialed to the middle unless the format calls for full in
 |---|---|---|
 | Flat correction | Closes a misread and gives the right frame in one beat: "No. [the specific correction]." | Negotiating the correction, or correcting vaguely. |
 | Invention shown as it happens | Shows the gap and the step that filled it: "I walked the property as if I were filming a travel show about it." | "I invented a framework" with no gap shown, or hiding the work it built on. |
-| Personal stake as credential | "I've lived out of a camper van for three summers." A fact too specific to fake grounds the claim that follows. | A stake that's claimed without evidence, or one that's irrelevant to the argument. |
+| Personal stake as credential | "I've lived out of a camper van for three summers." A fact too specific to fake grounds the claim that follows, and it has to be one the user gave. | A stake the user never gave, one that's claimed without evidence, or one that's irrelevant to the argument. |
 | Flat superlative | Claims rank with no amplifier, after the evidence is on the page. | "Truly one of my best", or a superlative with nothing behind it. |
 | Contained repetition with a pivot | Up to four parallel clauses name the weight, then one sentence turns to what you'll do about it. | No pivot, five or more clauses, or items too small to earn the repetition. |
 | De-escalator | A light off-ramp after a charged passage. | Using it as a habit, or where nothing needed defusing. |
@@ -55,11 +55,11 @@ Use one move at a time, dialed to the middle unless the format calls for full in
 
 | Move | What it does | How it fails |
 |---|---|---|
-| Specific-world opener | Drops the reader into one unfakeable place: "Most people know Millbrook for its outlet mall and a traffic circle that defeats every visitor, but the town also hides a 1920s rail depot and the last drive-in in the county." | "Imagine a beautiful natural space." Generic warmth is worse than none. |
+| Specific-world opener | Drops the reader into one unfakeable place, built from what the user told you about it: "Most people know Millbrook for its outlet mall and a traffic circle that defeats every visitor, but the town also hides a 1920s rail depot and the last drive-in in the county." | "Imagine a beautiful natural space." Generic warmth is worse than none, and a place filled in from memory is a made-up fact. |
 | Reader placement by condition | "If you run the river trail on Saturday mornings or catch the late set at the corner jazz bar, we may have crossed paths already." | A condition that pressures ("If you want the best strategist...") or one too vague to sort by. |
 | Compound comparison | Precision from several vivid named parts the reader can picture. | Parts the reader can't picture, or a composite where one image would do. |
 | Verbs that do analysis | "The plan listens its way through the neighborhood before it draws anything." | A verb straining to sound sensory ("the plan sings"), or several stacked. |
-| Density of specifics | Texture inside narrative: trails, rivers, a named bar. | A client list, which shows weight class but gives no texture. |
+| Density of specifics | Texture inside narrative, from the user's material: trails, rivers, a named bar. | A client list, which shows weight class but gives no texture, or texture the user never gave. |
 | Self-aware wink | A dry aside that names what it's winking at. | "We've all been there, right?" |
 | Humor inside the structure | The turn of the sentence makes the argument. | A joke you could delete without changing the sentence. |
 | Walk-with-me second person | Invites the reader to do something they'd want to do. | "Imagine a brand that transforms your business," or intimacy in a first contact. |
@@ -95,7 +95,7 @@ A piece usually moves through more than one mode, and each format guide names it
 
 ## Checks for the edit pass
 
-**Self-check.** Does the opening close the gap fast? Is the problem named before the solution? Has shared ground come before the credential? Is every metaphor doing work, and is none tacked on? Is every general category replaced by a specific instance? Is the writing aimed toward the reader? Do numbers end stories? Is any language borrowed? Does it sound like someone explaining what they know, or someone performing competence?
+**Self-check.** Does the opening close the gap fast? Is the problem named before the solution? Has shared ground come before the credential? Is every metaphor doing work, and is none tacked on? Is every general category replaced by a specific instance from the user's material, or by a bracket? Is every name, number and event in the piece one the user gave? Is the writing aimed toward the reader? Do numbers end stories? Is any language borrowed? Does it sound like someone explaining what they know, or someone performing competence?
 
 **Empty-phrasing test.** Wherever a phrase reaches for an effect ("make people feel something", "drive alignment"), write the specific version: "recognize themselves in the place." When a metaphor has a vague tail, let the metaphor generate specifics all the way through. Don't cut it.
 
@@ -103,7 +103,7 @@ A piece usually moves through more than one mode, and each format guide names it
 
 **While composing.**
 - Commit to one recommendation, defended with evidence. Give options only when asked.
-- Find first, write second: the physical version, the unfakeable detail, the behaviors behind a dynamic.
+- Find first, write second: the physical version, the unfakeable detail, the behaviors behind a dynamic, all from the user's material. What isn't there goes in a bracket.
 - When several goals pull a sentence in different directions, find the structure that settles them, or simplify. Adding clauses and appositions to satisfy everything is decoration posing as rigor.
 - Avoid the three sentence shapes that invite an em dash. Apposition ("X, the thing that does Y") becomes two sentences. A statement followed by a list takes a colon or becomes two sentences. A claim followed by its synthesis takes a period.
 - If the same cadence keeps coming back after the user corrects it, stop revising. The piece is missing source material, or it's using the wrong mode. Go back to the user's own samples, and ask them for what's missing.

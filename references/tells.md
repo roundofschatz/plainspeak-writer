@@ -9,6 +9,7 @@ Four root causes sit behind every row: the **likely word** (the model picks the 
 | Tell | Main cause | How to steer it |
 |---|---|---|
 | Stock phrases and safe adjectives | Likely word | Replace with the fact: a name, number or what happened. Generic words fill gaps where facts are missing. |
+| Facts the user didn't give: a scene, a true fact from memory, a plan the user didn't make, a result made bigger than the user said | Pleasing raters: specific detail reads as quality, so the model supplies it | Use only the user's material, and leave a bracket for the rest. The source check in SKILL.md (Step 7) catches what slips in, in the piece and in the notes. |
 | "Not just X, but Y" in every form, and "It's not about X, it's about Y" | Pleasing raters: it sounds sharp for little effort | Say Y. If X is a real view, name who holds it. "Rather than" and "instead of" state a contrast and stay. |
 | Em dashes, colon reveals, one-line paragraphs | Likely word: punchy web style is everywhere | Use a period, comma, colon or semicolon, whichever the structure needs. A colon belongs before a list or an explanation. A short reveal after a colon is allowed once per piece at most, and only where it lands. Join one-line paragraphs into paragraphs that finish a thought. |
 | The sentence shapes that invite an em dash: apposition, a statement followed by a list, a claim followed by its synthesis | Likely word | Apposition becomes two sentences. A statement and its list take a colon or two sentences. A claim and its synthesis take a period. |
@@ -30,12 +31,15 @@ Four root causes sit behind every row: the **likely word** (the model picks the 
 | Terminal abstraction ("the work travels", "the method holds") | Pleasing raters: it sounds like a landing | Give the verb an object and a result, or cut the sentence. Swapping synonyms reproduces it. |
 | Empty bridges ("at once", "the same" with nothing it's the same as, "bridge the gap") | Likely word | Cut the bridge or name the relationship. |
 | Choppy prose: fragments, or runs of short separate statements | Likely word, plus "short sentences" rules applied to published writing | Join sentences that belong together with because, so, but, yet or which. Keep short runs for stacked proof points. |
+| An opener that points back: a sentence that starts on "That", "This" or "It" and a verb, and refers to the sentence before instead of naming the thing ("That deliverable is a document...", "This is what I meant") | Likely word | Name the thing as the subject, or join the sentence to the one before. |
+| A short flat line right after a long one ("An app isn't one product.", "Don't overthink it.") | Pleasing raters: it sounds like a landing | Fold the point into the long sentence, or give the short line a fact of its own. |
+| A claim about skills or results that names nothing ("I have also built strong data visualization skills", "I've shared findings with many different audiences") | Caution, and the likely word | Name the tool, the number, the audience or the example, from the user's material or a bracket. |
 | Empty assertions ("made a case I agree with", "this matters") | Pleasing raters: announcing a stance looks decisive | Put the content in the sentence and cut the announcement. |
 | Rhetorical questions that restate the last sentence | Pleasing raters: reads as engaging | Cut the question and keep the concrete sentence. |
 | Intensifier labels ("ironically", "entirely", "completely") | Pleasing raters: they tell the reader how to feel | Show the irony with the facts, or cut the label. |
 | Faux shared wink ("We've all been there, right?") | Pleasing raters | Name the thing being winked at, or cut it. |
 | Timing-brag flourish ("years before the role had a title") | Pleasing raters | Cut the timing clause and keep the claim. |
-| Endings anchored in the person ("without any authority"), in the organization's flaws ("where nobody wanted change") or in nothing ("built four teams") | Pleasing raters: drama in place of an outcome | End every claim about the work on what it produced for the reader. |
+| Endings anchored in the person ("without any authority"), in the organization's flaws ("where nobody wanted change") or in nothing ("built four teams") | Pleasing raters: drama in place of an outcome | End every claim about the work on a result the user gave, or a bracket for one. Keep it as big as the user said it was. |
 | Drawn-out or inverted sentences ("X is the part I have to learn") | Likely word: imitates reflective prose | Put the subject and verb first. |
 | Hanging references ("gave the hours back") | Likely word: compressed stock phrasing | Say who did what and what it got. |
 | The indirect claim ("that is the work I have done") | Likely word | Say it directly: "I've done that work." Contract where speech would. |
@@ -55,12 +59,12 @@ Read the draft the way the script does:
 
 - Join lines that wrap inside a paragraph or a list item, so a phrase split by a line break still counts.
 - Skip the words inside quotation marks, double or single, straight or curly, and inside block quotes. A writer can't change what a source said.
-- Skip names. A capitalized word in the middle of a sentence is usually a name ("Synergy Health", "Google Drive"), and so is a capitalized pair at the start of a sentence ("Robust Intelligence", "Foster + Partners"). A word in capitals, a hyphenated word and a word ending in -ed or -ing are never names, so "Spearheaded Salesforce rollout" still counts. In a title written in title case, capitals don't mark names. A capital after a colon starts a sentence ("Goal: Empower teams").
-- Count every dash character as a dash, and keep the en dash in a number range ("2019–2021").
+- Skip names. A capitalized word in the middle of a sentence is usually a name ("Synergy Health", "Google Drive"), and so is a capitalized pair at the start of a sentence ("Robust Intelligence", "Foster + Partners"). Words joined by + or & are a name anywhere, even in a heading in title case ("Why Foster + Partners"). A word in capitals, a hyphenated word and a word ending in -ed or -ing are never names, so "Spearheaded Salesforce rollout" still counts. In a title written in title case, capitals don't mark names. A capital after a colon starts a sentence ("Goal: Empower teams").
+- Count every dash character as a dash, and keep the en dash in a number range ("2019–2021"). A divider of three or more hyphens, stars or underscores, with or without a mark at either end, is a rule line, not a dash: a cut line on a handout ("✂ - - - -") passes.
 - Skip label lines ("Budget: $40K.") for the colon check, S04.
 - Skip code blocks and inline code. Headings, list items, quotes, tables and label lines don't count toward the checks on sentence length.
 
-A block that lands on something the order in SKILL.md protects stays: a quote, name, number or technical term exactly as given, or something the user asked for. When the user's own instructions, samples or guide allow what a rule blocks, like dashes, that rule is off for the piece. Run the script with `--skip` and the rule's ID (`--skip R01`, or several separated by commas), and tell the user which rules are off.
+A block that lands on something the order in SKILL.md protects stays: a quote, name, number or technical term exactly as given, or something the user asked for. Pass the user's names and technical terms to the script with `--keep`, separated by commas (`--keep "Seamless,statistically significant"`), and it skips them anywhere, including where one opens a sentence. When the user's own instructions, samples or guide allow what a rule blocks, like dashes, that rule is off for the piece. Run the script with `--skip` and the rule's ID (`--skip R01`, or several separated by commas), and tell the user which rules are off.
 
 ### Blocks: rewrite every hit
 
@@ -95,6 +99,7 @@ A block that lands on something the order in SKILL.md protects stays: a quote, n
 - S02: "In summary", "In conclusion", "To sum up", and "Overall," at the start of a sentence or a list item. "Moreover", "furthermore" and "ultimately" warn under S02W.
 - S12: "Let that sink in" and "At its / their / our / my / his / her core".
 - S14: "Notably," at the start of a sentence.
+- U01: Signposting: "Here's why / what / how / the thing / the kicker / the catch", "this matters", "let me explain", "the bottom line is" and "make no mistake". It moved from the candidates in 1.5, when AI drafts were found using it about 26 times as often as human writers.
 
 **Words**
 - R20: "Actually" at the start of a sentence. Inside a sentence it warns under R20W.
@@ -145,14 +150,14 @@ A block that lands on something the order in SKILL.md protects stays: a quote, n
 - R40: "That is the / what / where / how / why / exactly / precisely" used as an indirect claim.
 - P02: "simply" and "literally". Keep them only when they change the meaning; "simply because" is plain English.
 - P03W: "significant(ly)" on its own, "powerful" and "comprehensive". Plain meanings and terms pass by reading: "a comprehensive budget", "significant harm", "a comprehensive metabolic panel". "Statistically significant" never warns.
-- P11: "drive", "drives" and "driving" as fluff verbs.
+- P11: "drive", "drives" and "driving" as fluff verbs, before a business object ("drive growth", "driving engagement", "drive the main work", "drive it forward"). The noun and a literal drive pass ("the spring food drive", "drive home").
 - S01: "most people / companies / strategists / brands / founders / leaders / firms / agencies / designers / marketers / insight work", "unlike many" and "where others". It passes as a real comparison against a named competitor or a measured baseline.
 - S02W: "moreover", "furthermore" and "ultimately". Inside a sentence, "ultimately" usually means "in the end" and passes by reading.
 - S04: The first colon reveal in a piece. Keep it only if it lands.
 - V03: An average under 14 words a sentence, or more than 35% of sentences at 10 words or fewer.
 - V04: More than half the paragraphs are one sentence long, in a piece of four or more paragraphs.
+- V07 (letter, resume, linkedin, blurb): A first-person sentence that claims a skill, a strength or a range ("skills", "experience", "expertise", "a wide range", "many different", "consistently", "strong") and names no number, no name and no bracket for one: "I have also built strong data visualization skills."
 - The U rules below are candidates. They warn until there's evidence that AI drafts use them far more often than human writers do; then they can become blocks.
-- U01: "Here's why / what / how / the thing / the kicker / the catch", "this matters", "let me explain", "the bottom line is" and "make no mistake".
 - U02: "sort of".
 - U03: "navigate", "realm", "pivotal", "crucial", and "landscape" except in "landscape architect" or "landscape architecture".
 - U04: Exclamation marks.
@@ -167,6 +172,9 @@ A block that lands on something the order in SKILL.md protects stays: a quote, n
 - U13: A trailing phrase that states the lesson: a comma, then "highlighting", "underscoring", "showcasing", "demonstrating", "reflecting", "reinforcing", "emphasizing", "illustrating", "signaling", "cementing", "solidifying", "proving" or "reaffirming", then "the", "its", "their", "our", "his", "her", "a", "an", "how", "that" or "why" ("The program cut costs, highlighting the value of early planning").
 - U14: "When it comes to" and "at the end of the day".
 - U15: "enhance", with its -s, -d and -ing forms, and "unprecedented".
+- U16 (linkedin): Three or more hashtags in a row. One or two that name a real event or community are fine.
+- U17 (linkedin): A line that starts with an arrow or an emoji as a bullet ("→ The buyer isn't the user."). An arrow inside a sentence passes.
+- U18 (linkedin): Engagement-bait closers: "I'd / we'd / I would love to hear / know / learn" (but "we'd love to hear from you" in a hiring post passes), "curious how others...", "what's worked for you", "share your thoughts / experience" and "how does your team handle / approach / keep...".
 
 ### Rate warnings: once per draft
 
@@ -177,6 +185,8 @@ Good writers use these habits too, so a single use means nothing. Each one warns
 - P10: Above 1.5 per 1,000 words, "just". Keep it only when it changes the meaning.
 - V01: Above 8 per 1,000 words, lists of three ("roads, parks, and trails"). A list of four or more items isn't a list of three, so nothing counts in "roads, bike lanes, bus shelters, and street trees". The script tells the two apart from the comma before the three items. When a plain item sits on each side of that comma, the list is longer than three. The three still count when that comma closes an opening phrase ("In March,", "However,", "Last year,", "Founded in 1920,") or an earlier list ("...and writers,"). They count too when the words after it start a clause or a phrase ("and the trails", "we shipped apples", "showing wit", "ideally with schools"), hold a preposition the three items hang off ("a row for dashes, colons and brackets") or run to six words or more while the next item opens on a different word. The script can't read every case. A longer list still counts when an item opens with an -ing or -ed word ("hiring plans") or a preposition ("in Ohio, in Maine, in Iowa, or in Texas"), and it passes by reading. A list of three after a name between commas ("My manager, Dana, likes...") is missed, and it counts by reading. A list passes when each item is specific and does work.
 - V02: At least two runs and above 2.5 runs per 1,000 words, where a run is three or more sentences of 10 words or fewer in a row. A run passes when it stacks proof points.
+- V05: Above 2.5 per 1,000 words, openers that point back: a sentence that starts on "That", "This", "These" or "Those" with "is", "was", "means", "gives", "makes" or a like verb ("That's", "This is", "That gives us"), on one of them with a noun and a verb ("That deliverable is", "That facilitation will"), or on "It's", "It is" or "It was" before "a", "an", "the", "what", "this", "that", "how", "why", "where" or "who" ("It's an understandable instinct"). Human writers use this shape about as often as AI drafts do, so it warns only above their rate. "It's hard to say" passes. Fix it by naming the thing.
+- V06: Above 2.5 per 1,000 words, short flat lines after long ones: a sentence of three to seven words that ends on a period, right after a sentence of 20 words or more in the same paragraph. A short line passes when it adds a fact of its own.
 
 ## Cousins to watch
 

@@ -11,8 +11,12 @@ A workshop deck runs in facilitative mode throughout, with persuasive slides at 
 - Put the instruction inside an invitation: "Pick a face. Talk about a day in the life." Make it clear enough that nobody has to ask what to do, and open enough that the output belongs to them.
 - Build safety through informality at the start: "No such thing as bad ideas or stupid questions."
 - Protect each person's voice before group dynamics take over, with individual work before group discussion.
-- Pair each activity's question with the direction for answering it and a time box.
+- Pair each activity's question with the direction for answering it and a time box. Use the user's timings, and leave `[minutes]` where they set none.
 - "Facilitate" is the right word for this work.
+
+## Facts in the materials
+
+Participants act on what the materials say, so every fact in them comes from the user. A rule of thumb or a figure the user didn't give, like a letter height for a reading distance, goes in a bracket for the facilitator to fill or confirm: `[letter height for this reading distance]`. So does anything about the group the user didn't mention, like who made the signs or what usually comes up.
 
 ## Samples
 

@@ -6,8 +6,10 @@ only, no other file or tool needed.
   S rules   ruled additions: made-up comparisons, wrap-up words, chatbot
             stock phrases, colon reveals, and the stock phrases added in 1.4
   U rules   candidates; they only warn until there's evidence that AI drafts
-            use them far more often than human writers do
-  V rules   judgment checks for lists of three and choppy prose
+            use them far more often than human writers do (U01 has that
+            evidence and blocks since 1.5)
+  V rules   judgment checks for lists of three, choppy prose and sentence
+            shapes
 
 An ID ending in W is the warning half of a rule that was split: the narrow
 form blocks and the common form warns (R02 blocks, R02W warns).
@@ -24,9 +26,15 @@ How the check reads a draft:
     start of a sentence (Robust Intelligence)
   - every dash character counts as a dash, except an en dash in a number
     range like 2019–2021
+  - a name joined by + or & (Foster + Partners) is read as a name, even in
+    a heading written in title case
+  - names and terms passed with --keep are skipped anywhere, even where
+    they open a sentence (Seamless now lets...)
+  - a divider or cut line made of hyphens (- - - - or a scissors mark and
+    hyphens) is a rule line, not a dash
   - label lines ("Budget: $40K.") are skipped by the colon check
-  - common habits (R09, R41, P10, V01, V02) warn once per draft, and only
-    when the draft runs above the rate in edited human writing
+  - common habits (R09, R41, P10, V01, V02, V05, V06) warn once per draft,
+    and only when the draft runs above the rate in edited human writing
   - the last three items of a list of four or more aren't counted as a list
     of three
 
@@ -39,6 +47,9 @@ How the check reads a draft:
                                                         # brand narratives, workshops
     python check_voice.py --skip R01 draft.md           # turn off a rule the user's
                                                         # own instructions allow
+    python check_voice.py --keep "Seamless,Foster + Partners" draft.md
+                                                        # skip the user's own names
+                                                        # and terms anywhere
 
 HARD blocks a draft. WARN needs a stated reason to keep. Exit 0 when no HARD
 hit, 1 when any HARD hit, 2 on a usage error.
@@ -47,7 +58,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.4.1"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.5"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -102,6 +113,45 @@ ROLES = (r"(?:professionals|leaders|executives|managers|strategists|designers|ma
 SELF_PRAISE = (r"(?:passionate|dynamic|results[\w-]*|strategic|creative|seasoned|proven|highly|"
                r"motivated|dedicated|driven|innovative|experienced|accomplished|versatile|"
                r"detail-oriented|self-starter|go-getter)")
+
+
+# Arrows and emoji that LinkedIn posts use as bullets (U17): the arrow
+# blocks, dingbats, symbols and pictographs, plus "->" and "=>". A plain
+# bullet (-, *, •) isn't one of them.
+_ARROW_EMOJI = (r"(?:[\u2190-\u21ff\u25aa\u25ab\u25b6\u25b8\u25ba\u25c6\u25c7\u2600-\u27bf"
+                r"\u2b05-\u2b07\u2b95\U0001f300-\U0001faff]\ufe0f?|->|=>)")
+
+# Objects that make "drive" a fluff verb (P11): "drive growth", "driving
+# engagement", "drive the main work". "Drive alignment" blocks under R26.
+_DRIVE_MODIFIERS = (r"(?:the|our|your|their|its|his|her|more|real|better|greater|meaningful|measurable|sustainable|"
+                    r"long-term|lasting|business|customer|user|deeper|stronger|higher|new|faster|positive|continued|"
+                    r"ongoing|further|key|critical|strategic|community|member|donor|team|organizational|operational|"
+                    r"digital|brand|tangible|incremental|repeat|main|this|that|these|those)")
+_DRIVE_OBJECTS = (r"(?:growth|engagement|results?|change|innovation|value|impact|adoption|revenue|sales|awareness|"
+                  r"traffic|conversions?|outcomes?|success|efficienc(?:y|ies)|performance|transformation|action|"
+                  r"momentum|decisions?|collaboration|excellence|loyalty|retention|demand|productivity|progress|"
+                  r"improvements?|roi|profitability|participation|strategy|strategies|culture|clarity|consensus|"
+                  r"accountability|insights?|usage|sign-?ups|leads|pipeline|bookings|attendance|enrollment|"
+                  r"donations|ownership|velocity|savings|work|initiatives?|agenda|conversations?)")
+
+# A first-person claim about skills, strengths or range (V07). The sentence
+# warns when it names no number, no name and no bracket for one.
+_VAGUE_CLAIM = re.compile(r"\b(?:skills?|experience|expertise|background|abilit(?:y|ies)|knowledge|proficien\w+|"
+                          r"track\s+record|strengths?|many\s+different|a\s+wide\s+range|a\s+variety\s+of|various|"
+                          r"diverse|numerous|consistently|strong)\b", re.IGNORECASE)
+_SELF_WORDS = frozenset("I I've I'm I'd I'll".split())
+
+
+def _names_nothing(line, m):
+    """True when a first-person sentence claims a skill, a strength or a
+    range ("I have also built strong data visualization skills", "I have
+    shared findings with many different audiences") and names no number, no
+    name and no bracket for one."""
+    s = m.group(0)
+    if not _VAGUE_CLAIM.search(s) or re.search(r"[\d\[]", s):
+        return False
+    words = re.findall(r"[A-Za-z][\w'-]*", s)
+    return not any(w[0].isupper() and w not in _SELF_WORDS for w in words[1:])
 
 
 def _prev_word(line, start):
@@ -555,6 +605,12 @@ HARD += [
     rule("S17", "ruling", "'it's not just'",
          r"\b(?:it|that|this|there|he|she|what|who|which)'s\s+not\s+just\b|\b(?:they|we|you)'re\s+not\s+just\b|\bI'm\s+not\s+just\b",
          "state the positive claim directly"),
+    # Promoted in 1.5. Red-team testing found it 10 times in drafts Claude
+    # wrote without the skill (3.14 per 10,000 words), never in drafts made
+    # with it, and 0.12 times per 10,000 words of edited human writing.
+    rule("U01", "ruling", "signposting",
+         r"\bhere's\s+(?:why|what|how|the\s+thing|the\s+kicker|the\s+catch)\b|\bthis\s+matters\b|\blet\s+me\s+explain\b|\bthe\s+bottom\s+line\s+is\b|\bmake\s+no\s+mistake\b",
+         "say the point instead of announcing it"),
 ]
 
 WARN += [
@@ -564,18 +620,20 @@ WARN += [
     rule("P03W", "plain language", "common size word",
          r"\b(?:powerful|comprehensive)\b|(?<!\bstatistically\s)\bsignificant(?:ly)?\b(?!\s+(?:improv\w+|growth|increas\w+|impact|results?|gains?|value)\b)",
          "give the number or the result, unless it's a plain meaning or a term ('a comprehensive budget', 'significant harm')"),
+    # Narrowed in 1.5 to "drive" before a business object. In red-team
+    # testing, 26 of 27 hits in drafts Claude wrote without the skill were
+    # the noun or a literal drive ("the spring food drive", "too tired to
+    # drive home").
     rule("P11", "plain language", "'drive' as a fluff verb",
-         r"\b(?:drive|drives|driving)\b(?!\s+alignment\b)",
-         "say the plain action unless it's a literal drive"),
+         r"\b(?:drive|drives|driving)\s+(?:" + _DRIVE_MODIFIERS + r"\s+){0,3}" + _DRIVE_OBJECTS + r"\b"
+         r"|\b(?:drive|drives|driving)\s+(?:[\w-]+\s+){1,2}?forward\b",
+         "say the plain action: what grew, who came, what changed"),
     rule("S01", "ruling", "made-up comparison",
          r"\b(?:most\s+(?:people|companies|strategists|brands|founders|leaders|firms|agencies|designers|marketers|insight\s+work)|unlike\s+many|where\s+others)\b",
          "compare only against a named competitor, a real number or a stated baseline"),
     rule("S02W", "ruling", "'moreover', 'furthermore', 'ultimately'",
          r"\b(?:moreover|furthermore|ultimately)\b",
          "cut it unless it does work; 'ultimately' inside a sentence often just means 'in the end'"),
-    rule("U01", "candidate", "signposting",
-         r"\bhere's\s+(?:why|what|how|the\s+thing|the\s+kicker|the\s+catch)\b|\bthis\s+matters\b|\blet\s+me\s+explain\b|\bthe\s+bottom\s+line\s+is\b|\bmake\s+no\s+mistake\b",
-         "say the point instead of announcing it"),
     rule("U02", "candidate", "hedge 'sort of'",
          r"\bsort\s+of\b",
          "cut the hedge"),
@@ -620,9 +678,39 @@ WARN += [
     rule("U15", "candidate", "possible chatbot word",
          r"\benhanc(?:e|es|ed|ing)\b|\bunprecedented\b",
          "use the plain word: improve, raise, first, largest"),
+    # Added in 1.5 as warnings, for habits Claude showed in LinkedIn posts
+    # written without the skill, which linkedin.md already bars. They warn
+    # until they're measured on human LinkedIn posts.
+    rule("U16", "candidate", "hashtag block",
+         r"(?<![\w#&/])#[A-Za-z]\w*(?:[\s,]+#[A-Za-z]\w*){2,}",
+         "use one or two hashtags, and only when they name a real event or community", surfaces=LI),
+    rule("U17", "candidate", "arrow or emoji bullet",
+         r"^\s*" + _ARROW_EMOJI + r"\s+\S+(?:\s+\S+){0,3}",
+         "write the points as sentences, or as a plain list when the content is a list", surfaces=LI),
+    rule("U18", "candidate", "engagement-bait closer",
+         r"\b(?:I|we)(?:'d|\s+would)\s+love\s+to\s+(?:hear|know|learn)\b(?!\s+from\s+you\b)"
+         r"|\bcurious\s+(?:how|what|whether|if)\s+(?:others|other\s+[\w-]+|you|your|everyone|folks|people|anyone)\b"
+         r"|\bwhat(?:'s|\s+has|\s+have)\s+worked\s+for\s+(?:you|your|others)\b"
+         r"|\b(?:share|tell\s+(?:me|us))\s+(?:yours|your\s+(?:thoughts|experiences?|take|stories|story))\b"
+         r"|\bhow\s+(?:do|does|are|is)\s+(?:you|your\s+(?:team|company|org|organization|studio|agency|firm))\s+"
+         r"(?:handle|handling|approach|approaching|deal|dealing|keep|keeping|manage|managing|tackle|tackling)\b",
+         "end on the position, a concrete ask or a next step", surfaces=LI),
+    # Added in 1.5 as a warning: one of three sentence shapes a blind reader
+    # marked in AI drafts during red-team testing. The other two warn by rate
+    # (V05, V06).
+    rule("V07", "judgment", "skills claim that names nothing",
+         r"\b(?:I|I've|I'm|I'd|My|We|We've|We're|Our)\b[^.!?]*[.!?]",
+         "name the tool, the number, the audience or the example, from the user's material or a bracket",
+         surfaces=LRLB, pos="sentence", ci=False, keep=_names_nothing),
 ]
 
 # ---------------------------------------------------------------- RATE ----
+# Limits for the sentence shapes added in 1.5, set the same way as the
+# others below: the rate nine in ten pieces of edited human writing stay at
+# or under, per 1,000 words.
+V05_RATE = 2.5
+V06_RATE = 2.5
+
 # Habits good writers also use. Each warns once per draft, only when the
 # draft has at least two hits and runs above the rate that more than nine in
 # ten pieces of edited human writing stay under. Thresholds are hits per
@@ -646,6 +734,19 @@ RATE = [
          r"(?<!, )\b[\w'-]+(?:\s[\w'-]+){0,3},\s[\w'-]+(?:\s[\w'-]+){0,3},?\s(?:and|or)\s[\w'-]+(?:\s[\w'-]+){0,3}\b",
          "fine when each item is specific and does work; a crutch when it stands in for logic",
          rate=8.0, keep=_is_list_of_three),
+    # Added in 1.5: a sentence that opens on "That", "This" or "It" and points
+    # back instead of naming the thing ("That deliverable is a document...",
+    # "This is what I meant"). Human writers do it about as often as AI
+    # drafts, so it warns only above the human rate.
+    rule("V05", "judgment", "opener that points back",
+         r"\b(?:that|this|these|those)(?:'s|\s+(?:is|was|are|were|means|meant|gives|gave|makes|made|leaves|left|"
+         r"becomes|became|tells|told|shows|showed))\s+\S+"
+         r"|\b(?:that|this|these|those)\s+(?!(?:is|was|are|were|means|meant|gives|gave|makes|made|leaves|left|becomes|"
+         r"became|tells|told|shows|showed)\b)[a-z][\w-]*\s+(?:is|was|are|were|will|would|can|could|gives|gave|means|"
+         r"meant|makes|made)\s+\S+"
+         r"|\bit(?:'s|\s+is|\s+was)\s+(?:a|an|the|what|this|that|how|why|where|who)\b",
+         "name the thing as the subject, or join the sentence to the one before",
+         rate=V05_RATE, pos="sentence"),
 ]
 
 # V02 judged per 1,000 words: runs of three or more short sentences. Long
@@ -673,8 +774,10 @@ _SIGNOFF = re.compile(r"^\s*(?:best|thanks|thank\s+you|many\s+thanks|sincerely|r
                       r"warm\s+regards|kind\s+regards|warmly|cheers|yours(?:\s+truly)?|respectfully|"
                       r"all\s+the\s+best|talk\s+soon)[,.!]?\s*$", re.IGNORECASE)
 _HEADING = re.compile(r"\s*#{1,6}(?:\s|$)")
-_ITEM = re.compile(r"\s*(?:[-*•+\u2013]|\d+[.)])\s")
-_RULE_LINE = re.compile(r"\s*(?:[-*_]\s*){3,}$")
+_ITEM = re.compile(r"\s*(?:[-*•+\u2013]|\d+[.)]|" + _ARROW_EMOJI + r")\s")
+# A divider: three or more hyphens, stars or underscores, spaced or not,
+# with an optional mark at either end, like a cut line ("✂ - - - -").
+_RULE_LINE = re.compile(r"\s*(?:[^\w\s]\ufe0f?\s*)?(?:[-*_]\s*){3,}(?:[^\w\s]\ufe0f?\s*)?$")
 _DASH_LED = re.compile(r"\s*[\u2013\u2014]")
 
 _CLOSERS = {"“": "”\"", "«": "»", '"': "\"”", "‘": "’'", "'": "'’"}
@@ -848,6 +951,8 @@ def is_name(line, m):
     sentence (Synergy Health, Google Drive), or a capitalized word at the
     start of a sentence when the next word is capitalized too (Robust
     Intelligence, Foster + Partners), but not an acronym ("Leveraging AI").
+    A capitalized word joined to another by + or & is a name anywhere, even
+    in a heading written in title case ("## Why Foster + Partners").
     Never a name: "I", a word in capitals for emphasis ("GAME-CHANGER"), a
     hyphenated word ("Results-driven") and a word ending in -ed or -ing
     ("Spearheaded", "Leveraging"). In a title written in title case,
@@ -859,6 +964,9 @@ def is_name(line, m):
         return False
     if (len(w) > 1 and w.isupper()) or "-" in w or re.search(r"(?:ed|ing)$", w.lower()):
         return False
+    after = line[s + len(w):s + len(w) + 40]
+    if re.match(r"\s*[+&]\s*[A-Z]", after) or re.search(r"[A-Z][\w'-]*\s*[+&]\s*$", line[max(0, s - 40):s]):
+        return True           # a name joined by + or &: Foster + Partners, Johnson & Johnson
     if _title_case(line, s):
         return False
     if not at_sentence_start(line, s):
@@ -906,9 +1014,25 @@ def word_count(text):
     return len(mask_code(text).split())
 
 
-def document_checks(text, surface="general", skip=frozenset(), blocks=None):
+def short_after_long(text):
+    """V06: sentences of three to seven words that end on a period, right
+    after a sentence of twenty words or more in the same paragraph ("An app
+    isn't one product."). Prose only, with bracketed placeholders out."""
+    hits = []
+    for para in re.split(r"\n\s*\n", prose_only(text)):
+        p = re.sub(r"\[[^\]]*\]", "", " ".join(para.split()))
+        ss = [x.strip() for x in re.split(r'(?<=[.!?])["\']?\s+', p) if x.strip()]
+        for a, b in zip(ss, ss[1:]):
+            if (len(a.split()) >= 20 and 3 <= len(b.split()) <= 7 and re.search(r"\.[\"')]?$", b)
+                    and b[:1] not in "\"'"):
+                hits.append(b)
+    return hits
+
+
+def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep=()):
     """Checks that need the whole draft. Returns (hard, warn) lists of
-    (line, label, hit, note) tuples; line 0 means the whole draft."""
+    (line, label, hit, note) tuples; line 0 means the whole draft. Names and
+    terms in `keep` are skipped by the rate rules too."""
     hard, warn = [], []
     if blocks is None:
         blocks = blocks_of(text)
@@ -929,7 +1053,7 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None):
     for r in RATE:
         if r["id"] in skip or surface not in r["surfaces"]:
             continue
-        found = scan_blocks(blocks, [r], surface, text)
+        found = scan_blocks(blocks, [r], surface, text, keep)
         n = len(found)
         if words and n >= r["min_hits"] and 1000.0 * n / words > r["rate"]:
             shown = ", ".join(f"\"{h[2]}\" L{h[0]}" for h in found[:5]) + (", ..." if n > 5 else "")
@@ -951,6 +1075,13 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None):
                      f"{runs} runs of three or more short sentences in {words} words, "
                      f"{1000.0 * runs / words:.1f} per 1,000; the longest has {worst}",
                      "fine only when it stacks proof points; otherwise join the sentences"))
+    flat = short_after_long(text) if "V06" not in skip else []
+    if len(flat) >= 2 and words and 1000.0 * len(flat) / words > V06_RATE:
+        shown = ", ".join(f"\"{h}\"" for h in flat[:5]) + (", ..." if len(flat) > 5 else "")
+        warn.append((0, "V06 short flat line after a long one (rate)",
+                     f"{len(flat)} in {words} words, {1000.0 * len(flat) / words:.1f} per 1,000, where 9 in 10 pieces "
+                     f"of edited human writing stay at or under {V06_RATE:g}: {shown}",
+                     "fold the point into the long sentence, or give the short line a fact of its own"))
     if lengths and "V03" not in skip:
         short_share = sum(1 for n in lengths if n <= 10) / len(lengths)
         avg = sum(lengths) / len(lengths)
@@ -1025,14 +1156,32 @@ def opener_block(blocks, text, surface):
     return None
 
 
-def scan_blocks(blocks, rules, surface, text):
-    """The hits for these rules in already-split blocks."""
+def _keep_spans(raw, keep):
+    """Where the user's own names and terms sit in a line. Each term matches
+    as given, with only its first letter free to change case, so
+    "statistically significant" also covers "Statistically significant" at
+    the start of a sentence, while "Seamless" doesn't cover "SEAMLESS"."""
+    spans = []
+    for term in keep:
+        t = term.translate(_QUOTES).strip()
+        if not t:
+            continue
+        head = f"[{t[0].upper()}{t[0].lower()}]" if t[0].isalpha() else re.escape(t[0])
+        for k in re.finditer(r"(?<!\w)" + head + re.escape(t[1:]) + r"(?!\w)", raw):
+            spans.append((k.start(), k.end()))
+    return spans
+
+
+def scan_blocks(blocks, rules, surface, text, keep=()):
+    """The hits for these rules in already-split blocks. A hit that starts
+    inside one of the user's names or terms in `keep` is skipped."""
     opener = opener_block(blocks, text, surface) if any(r["where"] == "opener" for r in rules) else None
     hits = []
     for bi, b in enumerate(blocks):
         if b["kind"] in ("quote", "rule"):
             continue
         line, raw = b["line"], b["raw"]
+        spans = _keep_spans(raw, keep) if keep else ()
         for r in rules:
             if surface not in r["surfaces"]:
                 continue
@@ -1045,19 +1194,21 @@ def scan_blocks(blocks, rules, surface, text):
                     continue
                 if is_name(raw, m):
                     continue
+                if any(a <= m.start() < z for a, z in spans):
+                    continue
                 hits.append((_line_at(b, m.start()), label_of(r), m.group(0).strip(), r["note"]))
     hits.sort(key=lambda h: h[0])
     return hits
 
 
-def scan(text, rules, surface="general"):
+def scan(text, rules, surface="general", keep=()):
     """Return [(line, label, hit, note)] for every rule hit on this surface,
     in line order, then rule order. `text` is split on universal newlines;
     lines that wrap inside a paragraph are joined, quotes and block quotes
-    are skipped, and so are names."""
+    are skipped, and so are names and the terms in `keep`."""
     if surface not in SURFACES:
         raise ValueError(f"unknown surface {surface!r}; one of {', '.join(SURFACES)}")
-    return scan_blocks(blocks_of(text), rules, surface, text)
+    return scan_blocks(blocks_of(text), rules, surface, text, keep)
 
 
 def read_text(path):
@@ -1067,13 +1218,13 @@ def read_text(path):
 
 def rule_ids():
     """Every ID the check can report, for --skip."""
-    return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04"}
+    return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04", "V06"}
 
 
-def report_files(paths, surface, by_rule=False, skip=frozenset()):
+def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
     """Build the report lines for the given files. Returns (lines, any_hard).
     Rules in `skip` are turned off, for what the user's own instructions,
-    samples or guide allow."""
+    samples or guide allow. Names and terms in `keep` are skipped."""
     out = []
     any_hard = False
     per_file = []
@@ -1087,9 +1238,9 @@ def report_files(paths, surface, by_rule=False, skip=frozenset()):
             any_hard = True
             continue
         blocks = blocks_of(text)
-        hard = scan_blocks(blocks, hard_rules, surface, text)
-        warn = scan_blocks(blocks, warn_rules, surface, text)
-        dhard, dwarn = document_checks(text, surface, skip, blocks)
+        hard = scan_blocks(blocks, hard_rules, surface, text, keep)
+        warn = scan_blocks(blocks, warn_rules, surface, text, keep)
+        dhard, dwarn = document_checks(text, surface, skip, blocks, keep)
         hard += dhard
         warn += dwarn
         per_file.append((path, hard, warn))
@@ -1097,7 +1248,8 @@ def report_files(paths, surface, by_rule=False, skip=frozenset()):
             any_hard = True
 
     out.append(f"check_voice {__version__}   surface: {surface}"
-               + (f"   turned off: {', '.join(sorted(skip))}" if skip else ""))
+               + (f"   turned off: {', '.join(sorted(skip))}" if skip else "")
+               + (f"   kept as given: {', '.join(keep)}" if keep else ""))
     if by_rule:
         groups = {}
         for path, hard, warn in per_file:
@@ -1146,6 +1298,10 @@ def main(argv=None):
     ap.add_argument("--skip", default="",
                     help="rule IDs to turn off, separated by commas, when the user's own instructions, "
                          "samples or guide allow what the rule blocks (for example --skip R01)")
+    ap.add_argument("--keep", action="append", default=[],
+                    help="the user's own names and technical terms, separated by commas, which the check skips "
+                         "anywhere (for example --keep \"Seamless,Foster + Partners\"); for a name with a comma "
+                         "in it, pass its distinctive part")
     ap.add_argument("--by-rule", action="store_true", help="group hits by rule across files")
     ap.add_argument("--out", help="write the report to this file (UTF-8, LF)")
     ap.add_argument("--list-rules", action="store_true", help="print the rule table and exit")
@@ -1159,6 +1315,7 @@ def main(argv=None):
                 print(f"{cls}\t{r['id']}\t{r['section']}\t{r['label']}\t{surf}\t{r['where']}{extra}")
         print(f"HARD\tS04\truling\tcolon reveal, the second in a piece (the first warns)\tall\tdraft")
         print(f"RATE\tV02\tjudgment\truns of three or more short sentences\tall\tdraft\tabove {V02_RATE:g} per 1,000 words")
+        print(f"RATE\tV06\tjudgment\tshort flat line after a long one\tall\tdraft\tabove {V06_RATE:g} per 1,000 words")
         print(f"WARN\tV03\tjudgment\tchoppy overall\tall\tdraft")
         print(f"WARN\tV04\tjudgment\tstaccato layout\tall\tdraft")
         return 0
@@ -1173,7 +1330,8 @@ def main(argv=None):
         print("check_voice.py: a draft file is required (see --help)")
         return 2
 
-    lines, any_hard = report_files(args.files, args.surface, args.by_rule, skip)
+    keep = tuple(t.strip() for v in args.keep for t in v.split(",") if t.strip())
+    lines, any_hard = report_files(args.files, args.surface, args.by_rule, skip, keep)
     report = "\n".join(lines) + "\n"
     try:
         sys.stdout.reconfigure(encoding="utf-8")

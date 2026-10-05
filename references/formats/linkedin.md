@@ -2,7 +2,7 @@
 
 ## What the reader needs
 
-The reader is scrolling. LinkedIn shows the first few lines and hides the rest behind "see more," so those lines decide whether anyone reads on. Open with the most specific thing in the piece: a fact, a scene or the claim itself. Never open with a greeting, a setup or "I've been thinking about".
+The reader is scrolling. LinkedIn shows the first few lines and hides the rest behind "see more," so those lines decide whether anyone reads on. Open with the most specific thing the user gave you: a fact, a scene or the claim itself. Don't build a scene the user didn't describe. Never open with a greeting, a setup or "I've been thinking about".
 
 ## Modes
 

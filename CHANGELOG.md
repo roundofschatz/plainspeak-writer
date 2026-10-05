@@ -2,6 +2,31 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.5 · Only what the user gave
+Why: a red-team test of 1.4 ran 30 writing jobs, twice each with the skill and twice without, plus 12 briefs once each way. 38 of the 72 drafts made with the skill had at least one fact the user never gave, against 51 of 72 drafts Claude wrote without it. Most were details made up to fill a thin brief, true facts from memory and plans the user never made, like a schedule or a call length. The skill's own instructions to be specific caused most of them. The lines that asked for a specific instance, a scene or a named result didn't repeat the rule against inventing facts, so on a thin brief they won.
+
+Instructions:
+- Added: to "When instructions conflict" in SKILL.md, that the rule against inventing covers true facts from memory and the notes around the piece, and that a plan the user hasn't made (a schedule, a meeting length, a price, a program name) goes in a bracket. Today's date from the computer's clock is fine.
+- Added: Step 7 of SKILL.md, a source check. Every name, number, date, quote and claim of what happened, in the piece and the notes, has to be in the user's material or in a bracket. The check script can't see an invented fact, so this step is what catches one. Deliver moves to Step 8.
+- Changed: Steps 1, 4 and 5 of SKILL.md. Each line that asks for a specific instance, something the reader can check or picture, or a detail only this piece has now says it comes from the user's material or goes in a bracket. A claim about the work ends on a result the user gave, as firmly and widely as the user gave it, and the writer owns the work at its real size. A rewrite made to clear a tell can't add a fact; in the test, one fix for choppy sentences added a passenger count the user never gave.
+- Changed: Step 8 (Deliver). The notes after the piece list what to fill in or verify, and add no fact, source or figure of their own. In the test, the notes were a second route for outside facts, like a survey's name or the year a law passed.
+- Changed: voice.md. Under move 3 ("Specificity is the trust signal"), an instance the user didn't give goes in a bracket, never in from memory. The specific-world opener, the personal stake and the density of specifics take their facts from the user, and the self-check asks whether every name, number and event is one the user gave.
+- Changed: letter.md. The opening fact comes from the user or the job posting, or a bracket. The closing ask leaves its length and date in brackets unless the user gave them. The writer's part is written at its real size, with the lead named when someone else led.
+- Changed: proposal.md. Specifics come from the user's notes, never from local history or market facts the model knows. Scope, dates, sizes, prices and past work use the user's figures and bracket the rest. A program name the user didn't give is described, or offered in a bracket for the user to decide.
+- Changed: think-piece.md, brand-narrative.md and linkedin.md. The opening scene, the case, the sensory detail and the physical thing come from the user's material. When there isn't one, the draft asks or leaves a bracket.
+- Changed: workshop.md. A rule of thumb or a timing the user didn't give goes in a bracket for the facilitator.
+- Added: to tells.md, a row for facts the user didn't give, and rows for three sentence shapes a blind reader marked in AI drafts: an opener that points back ("That deliverable is..."), a short flat line after a long one, and a skills claim that names nothing. The endings row now ends a claim on a result the user gave.
+
+The check:
+- Changed: U01 (signposting: "Here's what", "Here's how", "this matters") moves from a warning to a block. Claude without the skill used it 10 times in 72 drafts (3.14 per 10,000 words), the skill never, and edited human writing 0.12 times per 10,000 words.
+- Added: `--keep`, which takes the user's names and technical terms, separated by commas, and skips them anywhere. In the test, P03 blocked the company name "Seamless" where it opened a sentence.
+- Changed: a name joined by + or & ("Foster + Partners") is read as a name even in a heading in title case or a memo's Re: line, where P04 blocked "Foster".
+- Changed: R01 passes a divider or cut line made of hyphens ("✂ - - - -"), which it blocked on a printable handout.
+- Changed: P11 warns on "drive" only before a business object ("drive growth", "driving engagement", "drive the main work"). In the test, 26 of its 27 hits in drafts made without the skill were the noun or a literal drive ("the spring food drive").
+- Added, as warnings on LinkedIn: U16, three or more hashtags in a row; U17, an arrow or emoji used as a bullet; U18, engagement-bait closers like "I'd love to hear what's worked". Claude without the skill used them in 13, 10 and 5 of 20 posts, and the skill in none; linkedin.md already bars all three. A line that opens on an arrow or emoji now counts as a list item when wrapped lines are joined.
+- Added, as warnings: V05, an opener that points back, and V06, a short flat line after a long one, each once per draft above 2.5 per 1,000 words, the rate nine in ten pieces of edited human writing stay at or under. Human writers use both shapes about as often as AI drafts do (V05 13 per 10,000 words, V06 11), so the reading pass in tells.md does most of the work on them. V07, a skills claim that names nothing, warns per sentence in letters, resumes, LinkedIn and blurbs.
+- Changed: the checker's version to 1.5, and the full check in tells.md to match.
+
 ## 1.4.1 · A list of four isn't a list of three
 Why: V01 counted the last three items of a longer list as a list of three. Its pattern only refused a match that started right after a comma, so a list of four or more still matched from partway through an item: "roads, bike lanes, bus shelters, and street trees" counted from "lanes". On October 1, 2026, a 498-word test letter got five V01 hits, 10.0 per 1,000 words, and a warning. A reader counts three lists of three in it, 6.0 per 1,000, which is under the limit of 8.
 

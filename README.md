@@ -19,15 +19,16 @@ Plainspeak Writer answers each pull: facts replace generic words, a named reader
 
 ## How it works
 
-Every piece runs through seven steps:
+Every piece runs through eight steps:
 
-1. **Find the material.** Names, numbers, places and what happened. Gaps get a marked bracket for you to fill, and the skill never invents a fact or a quote.
+1. **Find the material.** Names, numbers, places and what happened, from what you give it. Gaps get a marked bracket for you to fill, and the skill never invents a fact or a quote, or fills one in from memory.
 2. **Answer four questions.** Who's reading and what the piece has to survive, what they should do or believe after, the position and its strongest objection, and how much heat the subject can take.
 3. **Load the right files.** The voice guide, the format guide for the job, and any samples or brand guide you share.
 4. **Draft** in a plain, specific, warm voice that writes toward the reader.
 5. **Edit in a separate pass.** It checks for the tells and for what the voice should produce, reads each paragraph aloud and cuts what repeats.
 6. **Run the full check.** Rules that block and warnings that need a stated reason.
-7. **Deliver** the piece, with an edit log when you ask for one.
+7. **Check every fact against the source.** Each name, number, date and quote is in your material or in a bracket.
+8. **Deliver** the piece, with an edit log when you ask for one, and a list of the brackets to fill.
 
 ## What's in the folder
 
@@ -92,7 +93,7 @@ python scripts/check_voice.py --surface linkedin draft.txt
 
 Set the surface to match the piece: `letter` for letters and outreach, `blurb` for referral blurbs, `linkedin` for posts, About sections and headlines, `resume`, or `general` for proposals, think pieces, brand narrative and workshop material. A run without `--surface` uses `general`. HARD hits block the draft, and WARN hits stay only with a stated reason. Run `--list-rules` to see every rule.
 
-The check skips words inside quotation marks and block quotes, and capitalized names in the middle of a sentence, so a source's words and a company's name inside a sentence don't count against your draft. Habits good writers share, like lists of three and the word "just", warn only when a draft uses them more than nine in ten pieces of edited human writing do. When your own samples or style guide use something a rule blocks, like em dashes, turn that rule off with `--skip R01`.
+The check skips words inside quotation marks and block quotes, and capitalized names in the middle of a sentence, so a source's words and a company's name inside a sentence don't count against your draft. Habits good writers share, like lists of three and the word "just", warn only when a draft uses them more than nine in ten pieces of edited human writing do. When your own samples or style guide use something a rule blocks, like em dashes, turn that rule off with `--skip R01`. Pass your own names and technical terms with `--keep "Seamless,statistically significant"`, and the check skips them anywhere, even where a name opens a sentence.
 
 A clean check means the draft has none of the surface patterns. Whether it's good writing is still the edit pass's call.
 
@@ -105,7 +106,7 @@ Pull requests are welcome when they keep to these rules:
 - **Log every change** in `CHANGELOG.md`: what was added, changed or removed, and why. Nothing comes out without a line saying so.
 - **Keep the two checks in step.** A rule added to `check_voice.py` gets a plain-words entry in the full check in `tells.md`, with the same ID.
 - **Show the evidence for a new rule.** Include a real example of the tell and the plain version that replaces it.
-- **Promote candidates with care.** The U rules only warn. To make one block, show where it fires on human writing and where it doesn't.
+- **Promote candidates with care.** The candidate U rules only warn. To make one block, show where it fires on human writing and where it doesn't, the way U01's move to a block in 1.5 did.
 - **Run the check on your own docs** before you open the pull request.
 
 To add a format, create `references/formats/<name>.md` with what the reader needs, the sequence of modes, length and limits, and the check settings. Then list it in Step 3 of `SKILL.md`.

@@ -2,7 +2,7 @@
 
 ## What the reader needs
 
-One busy person is deciding whether to reply, meet or interview you. In the first two sentences they need to know why you're writing to them in particular and what you're offering, so open with a specific fact about their company, role or recent work, and connect it to what you've done.
+One busy person is deciding whether to reply, meet or interview you. In the first two sentences they need to know why you're writing to them in particular and what you're offering, so open with a specific fact about their company, role or recent work, and connect it to what the writer has done. Take that fact from what the user or the job posting gives you. If there isn't one, leave a bracket like `[something specific about their recent work]` rather than supplying one from memory.
 
 ## Modes
 
@@ -16,8 +16,8 @@ Strong letters often move in four parts. They open on the reader's world, named 
 
 - Address a named person whenever you can find one.
 - Open with the connection between their need and your work. Skip the throat-clearing, like "I'm writing to express my interest" or "I hope this finds you well."
-- Give two or three pieces of evidence, each with a named firm, a number or a result, and tie each one to something the reader needs.
-- Close with one clear ask: a call, a meeting or a reply by a date. The invitation is the last sentence. Performed-warmth closers ("Thank you for your consideration", "I look forward to the opportunity to discuss") go.
+- Give two or three pieces of evidence from the user's material, each with a named firm, a number or a result, and tie each one to something the reader needs.
+- Close with one clear ask: a call, a meeting or a reply. Leave its length and date in brackets unless the user gave them: "a [20]-minute call", "by [date]". The invitation is the last sentence. Performed-warmth closers ("Thank you for your consideration", "I look forward to the opportunity to discuss") go.
 
 ## Length
 
@@ -26,8 +26,8 @@ A cover letter runs 250 to 350 words. Cold outreach runs 100 to 150, because the
 ## Rules for letters about the writer
 
 - Never name a gap, a shortcoming, a missing title or something the writer "has to learn." On a letter those read as reasons to say no.
-- Write the claims as things the writer did, in first person: "I built", "I led", "I cut." Never "contributed to" or "helped develop".
-- End every claim on what the work produced for the reader, never on the writer's difficulty or the old firm's flaws.
+- Write the writer's own part in first person, at its real size: "I built", "I ran", "I cut" for what they did. When someone else led, name the lead: "My manager led the project, and I ran the survey of 200 customers." Never "contributed to" or "helped develop", and never a bigger verb than the user's own: "ran a survey" doesn't become "designed the research".
+- End every claim on a result the user gave, or a bracket for one, never on the writer's difficulty or the old firm's flaws.
 - When the user shares letters they've sent, those are the model for sentences.
 
 ## Letters written for someone else to send
