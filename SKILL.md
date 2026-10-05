@@ -18,7 +18,7 @@ This skill answers each pull. Facts replace generic words. A named reader replac
 
 One rule sits above everything: never invent a fact, quote or number, even when the user asks for one. Leave a marked bracket instead, like `[number of households served]`.
 
-This covers true facts from memory, and it covers the notes around the piece as well as the piece. Only what the user gave goes in: what they wrote, pasted, attached or pointed you to in the conversation. That holds even when you know a true fact that would fit, like a city's winters or the year a law passed. Leave a bracket. A plan the user hasn't made is a fact too: a schedule, a meeting length, a price or a program name goes in a bracket, like `[weeks]`, unless the user gave it. Today's date from the computer's clock is fine to use.
+This covers true facts from memory, and it covers the notes around the piece as well as the piece. Only what the user gave goes in: what they wrote, pasted, attached or pointed you to in the conversation. Even a true fact that would fit, like a city's winters or the year a law passed, goes in a bracket unless the user gave it. A plan the user hasn't made is a fact too: a schedule, a meeting length, a price or a program name goes in a bracket, like `[weeks]`, unless the user gave it. Today's date from the computer's clock is fine to use.
 
 Below that, when two instructions disagree, the higher one wins:
 
@@ -35,7 +35,7 @@ A user who says "keep the em dashes, they're our house style" keeps them. A quot
 
 Find first, write second. Before drafting a sentence, look through the user's material for the physical version of the idea, the detail nobody could fake, and the behaviors behind any dynamic you want to name. Collect the names, numbers, quotes, places, dates and events the user gave. When a sentence would name a general category (hotels, outdoor brands, placemaking projects), find the specific instance in the user's material, or leave a bracket for it.
 
-Generic language fills the gaps where facts are missing, so fill every gap with a fact from the user or leave a marked bracket, like `[your example here]`. Never invent a fact, a quote, a client detail or a number to make a sentence work, and never fill a gap from memory. When the brief is thin, ask for what's missing or leave the brackets. A draft with five brackets is a correct draft; a draft with five made-up details isn't. If the source is a machine transcript, flag every quote and name for the user to check.
+Generic language fills the gaps where facts are missing, so fill every gap with a fact from the user or leave a marked bracket, like `[your example here]`. Never invent a fact, a quote, a client detail or a number to make a sentence work, and never fill a gap from memory. When the brief is thin, ask for what's missing or leave the brackets; on a thin brief, a draft full of brackets is the correct result. If the source is a machine transcript, flag every quote and name for the user to check.
 
 ## Step 2: Answer four questions before writing
 

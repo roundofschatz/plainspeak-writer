@@ -709,7 +709,7 @@ WARN += [
 # others below: the rate nine in ten pieces of edited human writing stay at
 # or under, per 1,000 words.
 V05_RATE = 2.5
-V06_RATE = 2.5
+V06_RATE = 5.0
 
 # Habits good writers also use. Each warns once per draft, only when the
 # draft has at least two hits and runs above the rate that more than nine in
@@ -1015,18 +1015,17 @@ def word_count(text):
 
 
 def short_after_long(text):
-    """V06: sentences of three to seven words that end on a period, right
-    after a sentence of twenty words or more in the same paragraph ("An app
-    isn't one product."). Prose only, with bracketed placeholders out."""
-    hits = []
+    """V06: sentences of three to eight words that end on a period, right
+    after a sentence of fifteen words or more, in the same paragraph or at
+    the start of the next one ("An app isn't one product.", "The web moves
+    on a different clock."). Prose only, with bracketed placeholders out."""
+    ss = []
     for para in re.split(r"\n\s*\n", prose_only(text)):
         p = re.sub(r"\[[^\]]*\]", "", " ".join(para.split()))
-        ss = [x.strip() for x in re.split(r'(?<=[.!?])["\']?\s+', p) if x.strip()]
-        for a, b in zip(ss, ss[1:]):
-            if (len(a.split()) >= 20 and 3 <= len(b.split()) <= 7 and re.search(r"\.[\"')]?$", b)
-                    and b[:1] not in "\"'"):
-                hits.append(b)
-    return hits
+        ss += [x.strip() for x in re.split(r'(?<=[.!?])["\']?\s+', p) if x.strip()]
+    return [b for a, b in zip(ss, ss[1:])
+            if len(a.split()) >= 15 and 3 <= len(b.split()) <= 8 and re.search(r"\.[\"')]?$", b)
+            and b[:1] not in "\"'"]
 
 
 def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep=()):
@@ -1081,7 +1080,7 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
         warn.append((0, "V06 short flat line after a long one (rate)",
                      f"{len(flat)} in {words} words, {1000.0 * len(flat) / words:.1f} per 1,000, where 9 in 10 pieces "
                      f"of edited human writing stay at or under {V06_RATE:g}: {shown}",
-                     "fold the point into the long sentence, or give the short line a fact of its own"))
+                     "fold the point into the long sentence, or cut the short line if it only restates it"))
     if lengths and "V03" not in skip:
         short_share = sum(1 for n in lengths if n <= 10) / len(lengths)
         avg = sum(lengths) / len(lengths)
