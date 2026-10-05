@@ -112,13 +112,15 @@ The check only finds surface patterns, so a clean result doesn't mean clean writ
 
 ## Step 7: Have a fresh reader check the facts
 
-The writer of a draft doesn't see what it added; a reader who didn't write it does. When you can start a separate agent (a subagent or task tool), give it only three things: the user's message, the list from Step 1, and the piece with its notes. It needs no other file. Ask it to quote every name, number, date, quote, description and claim of what happened that the user's message doesn't give or support, and every place the piece says something bigger or firmer than the message does. Don't give it your reasons or your drafting history.
+The writer of a draft doesn't see what it added; a reader who didn't write it does. Run this check on every piece, after you've written the notes that go with it, so the reader sees both. When you can start a separate agent (a subagent or task tool), give it only three things: the user's message, the list from Step 1, and the piece with its notes. It needs no tools or other files and answers in one reply. If you can choose its model, a smaller, faster one is enough for this check. Ask it to quote every name, number, date, quote, description and claim of what happened that the user's message doesn't give or support, and every place the piece says something bigger or firmer than the message does. Don't give it your reasons or your drafting history.
 
 Cut each line it quotes, or rewrite it from the list; a fact the piece can't stand without gets a bracket naming it. Don't argue with the reader. Then check the length again, and fill any gap the cuts left the way Step 4 says.
 
 When you can't start a separate agent, do the same yourself: read the piece and the notes line by line against the user's message as if someone else wrote them.
 
 ## Step 8: Deliver
+
+Before you deliver, count the words in the piece, with `wc -w` when you can run code. If the count is under the range or the number the user asked for, add to it the way Step 4 says; never deliver it short. Don't add to the notes after the reader's check.
 
 Give the piece first. Any line the user required, like a credit line, goes in exactly as it stands on the list. When the user is calibrating the skill or asks for it, add a short edit log after the piece: one line per change, saying what the draft had, what replaced it and why. Then list what the user must fill in or verify: each bracket, and any quote or name from a machine transcript. Don't ask the user to check a line you wrote without their facts; take the line out. The notes follow the same rule as the piece. They add no fact, source, figure or example the user didn't give, so no "Gallup estimates..." and no "the law passed in 2018". When a fact would help, name the kind of fact to find, like "a source for the cost of turnover", and let the user find it. Name it without supplying it: no definition, figure or threshold inside the note.
 

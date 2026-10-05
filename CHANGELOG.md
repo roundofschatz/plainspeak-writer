@@ -47,6 +47,11 @@ A 30-draft test of that round still had 4 drafts with a fact the user didn't giv
 - Added: to Step 4, that a length the user asks for, or a format guide's range, is a requirement, met from the user's facts, the argument the piece has to make and labeled slots for the user's own material, never by stopping short or by adding facts.
 - Added: Step 7, a fresh reader. Where the skill can start a separate agent, a reader that sees only the user's message, the fact list and the draft quotes every line the message doesn't support, and the writer cuts or rewrites each one. Where it can't, the skill rereads the draft against the message line by line. Deliver is Step 8.
 
+A 30-draft test of that round had no made-up content in any piece. Two drafts still had a fact the user didn't give in the notes, one where the notes were written after the reader's check and one where the reader never ran, and some pieces still ran short. So:
+- Changed: Step 7. The reader checks every piece, and the notes are written first so it sees them. It needs no tools, answers in one reply, and can run on a smaller, faster model, since a check against a short list doesn't need the strongest one.
+- Added: to Step 8, a word count before delivery, with `wc -w` when code can run. A piece under its range or the user's number gets filled the way Step 4 says, never delivered short. Nothing is added to the notes after the check.
+- Removed: "Stop sooner if the point is made" from linkedin.md, for the same reason "a thin brief makes a short, plain piece" came out of SKILL.md. Three posts had come in at 78 to 119 words against 150 to 300.
+
 ## 1.4.1 · A list of four isn't a list of three
 Why: V01 counted the last three items of a longer list as a list of three. Its pattern only refused a match that started right after a comma, so a list of four or more still matched from partway through an item: "roads, bike lanes, bus shelters, and street trees" counted from "lanes". On October 1, 2026, a 498-word test letter got five V01 hits, 10.0 per 1,000 words, and a warning. A reader counts three lists of three in it, 6.0 per 1,000, which is under the limit of 8.
 
