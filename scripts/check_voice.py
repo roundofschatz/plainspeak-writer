@@ -14,8 +14,11 @@ only, no other file or tool needed.
 An ID ending in W is the warning half of a rule that was split: the narrow
 form blocks and the common form warns (R02 blocks, R02W warns).
 
-Every rule is also written out in plain words in references/tells.md
-("The full check"), so the check runs by reading when code can't run.
+Every rule is also written out in plain words in references/full-check.md,
+so the check runs by reading when code can't run.
+
+The report gives each file's word count, counted the way wc -w counts, so
+one run checks the rules and the length.
 
 How the check reads a draft:
   - lines that wrap inside a paragraph are joined before checking
@@ -1227,6 +1230,7 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
     out = []
     any_hard = False
     per_file = []
+    words = {}
     hard_rules = [r for r in HARD if r["id"] not in skip]
     warn_rules = [r for r in WARN if r["id"] not in skip]
     for path in paths:
@@ -1236,6 +1240,7 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
             out.append(f"FAIL: cannot read {path}: {e}")
             any_hard = True
             continue
+        words[path] = len(text.split())
         blocks = blocks_of(text)
         hard = scan_blocks(blocks, hard_rules, surface, text, keep)
         warn = scan_blocks(blocks, warn_rules, surface, text, keep)
@@ -1270,6 +1275,7 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
         for path, hard, warn in per_file:
             out.append("")
             out.append(f"=== {path} ===")
+            out.append(f"Words: {words[path]}")
             if not hard and not warn:
                 out.append("PASS: no pattern violations.")
                 continue

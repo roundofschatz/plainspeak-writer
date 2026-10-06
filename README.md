@@ -19,16 +19,15 @@ Plainspeak Writer answers each pull: facts replace generic words, a named reader
 
 ## How it works
 
-Every piece runs through eight steps:
+Every piece runs through seven steps:
 
 1. **List your facts.** Names, numbers, places, quotes and what happened, from what you give it, written down once before drafting. The piece uses only that list. The skill never invents a fact or a quote, fills one in from memory or guesses, and a fact the piece can't do without gets a bracket for you to fill.
 2. **Answer four questions.** Who's reading and what the piece has to survive, what they should do or believe after, the position and its strongest objection, and how much heat the subject can take.
-3. **Load the right files.** The voice guide, the format guide for the job, and any samples or brand guide you share.
+3. **Load the right files.** The voice guide, the format guide for the job, and any samples or brand guide you share. The skill's own sample passages load only when you share no writing of your own.
 4. **Draft** from the list, in a plain, warm voice that writes toward the reader.
-5. **Edit in a separate pass.** It checks for the tells and for what the voice should produce, reads each paragraph aloud and cuts what repeats.
-6. **Run the full check.** Rules that block and warnings that need a stated reason.
-7. **Have a fresh reader check the facts.** Where Claude can start a separate agent, a reader that sees only your message, the fact list and the draft quotes anything you didn't give, and the writer cuts it.
-8. **Deliver** the piece, with an edit log when you ask for one, and a list of the brackets to fill.
+5. **Edit, then run the check.** The edit looks for the tells and for what the voice should produce, reads each paragraph aloud and cuts what repeats. The check finds rules that block and warnings that need a stated reason, and counts the words.
+6. **Have a fresh reader check the facts.** Where Claude can start a separate agent, a reader that sees only your message, the fact list and the draft quotes anything you didn't give, and the writer cuts it.
+7. **Deliver** the piece exactly as checked, with an edit log when you ask for one, and a short list of the brackets to fill.
 
 ## What's in the folder
 
@@ -40,7 +39,8 @@ plainspeak-writer/
 ├── CHANGELOG.md                 every change, newest first
 ├── references/
 │   ├── voice.md                 where the voice sits, how it works, moves, modes, checks
-│   ├── tells.md                 every tell with its cause and fix, plus the full check
+│   ├── tells.md                 every tell with its cause and fix
+│   ├── full-check.md            every rule the script checks, for when it can't run
 │   ├── samples.md               public-domain passages and writers to study
 │   └── formats/
 │       ├── linkedin.md
@@ -50,7 +50,7 @@ plainspeak-writer/
 │       ├── brand-narrative.md
 │       └── workshop.md
 └── scripts/
-    └── check_voice.py           optional checker with the same rules as tells.md
+    └── check_voice.py           optional checker with the same rules as full-check.md
 ```
 
 The repository is the skill folder, so the folder name has to stay `plainspeak-writer`. Skills only load from a folder whose name matches the `name` field in SKILL.md.
@@ -85,7 +85,7 @@ Ask for the output you need, and give Claude the facts. For example:
 
 ## The check
 
-Every rule is written out in plain words in `references/tells.md`, so Claude can run the check by reading, with no tools. When code can run, `scripts/check_voice.py` finds the same items faster. It needs Python 3 and nothing else. From inside the folder:
+Every rule is written out in plain words in `references/full-check.md`, so Claude can run the check by reading, with no tools. When code can run, `scripts/check_voice.py` finds the same items faster, counts the words, and Claude never opens that file. It needs Python 3 and nothing else. From inside the folder:
 
 ```bash
 python scripts/check_voice.py --surface linkedin draft.txt
@@ -104,7 +104,7 @@ Pull requests are welcome when they keep to these rules:
 - **Keep it general.** No personal details, clients or private work in any file. Plainspeak Writer is a tool for anyone.
 - **Build on what's here.** Change or extend a rule instead of replacing the file around it.
 - **Log every change** in `CHANGELOG.md`: what was added, changed or removed, and why. Nothing comes out without a line saying so.
-- **Keep the two checks in step.** A rule added to `check_voice.py` gets a plain-words entry in the full check in `tells.md`, with the same ID.
+- **Keep the two checks in step.** A rule added to `check_voice.py` gets a plain-words entry in `full-check.md`, with the same ID.
 - **Show the evidence for a new rule.** Include a real example of the tell and the plain version that replaces it.
 - **Promote candidates with care.** The candidate U rules only warn. To make one block, show where it fires on human writing and where it doesn't, the way U01's move to a block in 1.5 did.
 - **Run the check on your own docs** before you open the pull request.

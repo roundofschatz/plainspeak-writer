@@ -52,6 +52,14 @@ A 30-draft test of that round had no made-up content in any piece. Two drafts st
 - Added: to Step 8, a word count before delivery, with `wc -w` when code can run. A piece under its range or the user's number gets filled the way Step 4 says, never delivered short. Nothing is added to the notes after the check.
 - Removed: "Stop sooner if the point is made" from linkedin.md, for the same reason "a thin brief makes a short, plain piece" came out of SKILL.md. Three posts had come in at 78 to 119 words against 150 to 300.
 
+A 30-draft test of that round had one changed line and one short letter, and both came from the piece the user saw not being the piece the skill checked. A credit line lost "the" when the model typed the piece out again, and a letter the skill counted at 253 words went out at 248. Drafts also cost about 45% more once the reader came in. Most of a draft's cost is text loaded into it, and the biggest file loaded was the rule-by-rule check, which the script already runs. So:
+- Changed: Step 7 (Deliver, which was Step 8). The piece delivered is the file checked last, word for word. The skill prints the file and copies its reply from it, and a change after the check means running the check again. The notes hold only the brackets to fill, what to verify and any rule turned off or block kept, a line each, and nothing about other choices unless the user asks.
+- Changed: Step 4. A length range is met from its middle, not its floor.
+- Changed: the edit pass and the check become one step, Step 5. The check and the word count run in one command, on the piece in its own file, and a line the user required goes to `--keep` whole. The fresh reader is Step 6.
+- Moved: the rule-by-rule check from tells.md to its own file, `full-check.md`, which the skill reads only when the script can't run. tells.md keeps the edit pass's table, the cousins and what's allowed.
+- Changed: Step 3. Each file is read once, whole; drafts had re-read tells.md in pieces. samples.md loads only when the user shares no writing of their own.
+- Added: check_voice.py prints each file's word count, counted the way `wc -w` counts.
+
 ## 1.4.1 · A list of four isn't a list of three
 Why: V01 counted the last three items of a longer list as a list of three. Its pattern only refused a match that started right after a comma, so a list of four or more still matched from partway through an item: "roads, bike lanes, bus shelters, and street trees" counted from "lanes". On October 1, 2026, a 498-word test letter got five V01 hits, 10.0 per 1,000 words, and a warning. A reader counts three lists of three in it, 6.0 per 1,000, which is under the limit of 8.
 
