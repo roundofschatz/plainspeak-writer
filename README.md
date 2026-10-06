@@ -29,6 +29,8 @@ Every piece runs through seven steps:
 6. **Have a fresh reader check the facts.** Where Claude can start a separate agent, a reader that sees only your message, the fact list and the draft quotes anything you didn't give, and the writer cuts it.
 7. **Deliver** the piece exactly as checked, with an edit log when you ask for one, and a short list of the brackets to fill.
 
+The fact check in step 6 needs a tool that lets Claude start a second agent, like Claude Code or Cowork. Without one, Claude checks its own draft, and in testing that let a problem through in about 1 draft in 8, like a fact you didn't give or a changed quote. In plain Claude chat, check the names, numbers and quotes yourself before you use a piece.
+
 ## What's in the folder
 
 ```

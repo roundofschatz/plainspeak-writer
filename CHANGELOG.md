@@ -60,6 +60,9 @@ A 30-draft test of that round had one changed line and one short letter, and bot
 - Changed: Step 3. Each file is read once, whole; drafts had re-read tells.md in pieces. samples.md loads only when the user shares no writing of their own.
 - Added: check_voice.py prints each file's word count, counted the way `wc -w` counts.
 
+A last 30-draft test with no way to start a second agent had 4 drafts with a fact the user didn't give or a changed credit line, against none in 60 with the fresh reader. So:
+- Added: a line to the README that the fact check needs a tool that can start a second agent, like Claude Code or Cowork, and that in plain Claude chat the user should check names, numbers and quotes themselves.
+
 ## 1.4.1 · A list of four isn't a list of three
 Why: V01 counted the last three items of a longer list as a list of three. Its pattern only refused a match that started right after a comma, so a list of four or more still matched from partway through an item: "roads, bike lanes, bus shelters, and street trees" counted from "lanes". On October 1, 2026, a 498-word test letter got five V01 hits, 10.0 per 1,000 words, and a warning. A reader counts three lists of three in it, 6.0 per 1,000, which is under the limit of 8.
 
