@@ -6,7 +6,7 @@ This is the voice the skill writes in. The examples show the moves, and none of 
 
 **Calibration, not compliance.** A draft can avoid every tell and still fail. Check every draft against two questions at the same time. First, does it hit any failure named in `tells.md`? Second, does it produce the effects this file describes: warmth, writing toward the reader, a clear position, and humor that does real work? Revise toward the effects with the user's facts only. Specificity comes from what the user gave, and every move below works only with material the user supplied.
 
-**Every example is an instance, not a template.** The passages and moves here show how the voice worked once, for one purpose. Compose against the reader and the piece in front of you. Never pull a sample in as fixed wording, and never fixate on one move across revisions.
+**Every example is an instance, not a template.** The passages and moves here show how the voice worked once, for one purpose. Compose against the reader and the piece in front of you. Never pull one of these passages in as fixed wording, and never fixate on one move across revisions.
 
 **Don't import the chat's metaphors.** When the user uses a metaphor in conversation to make a point, it's evidence of their voice at that moment. It isn't a frame to weave through the deliverable.
 

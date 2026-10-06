@@ -8,8 +8,8 @@ only, no other file or tool needed.
   U rules   candidates; they only warn until there's evidence that AI drafts
             use them far more often than human writers do (U01 has that
             evidence and blocks since 1.5)
-  V rules   judgment checks for lists of three, choppy prose and sentence
-            shapes
+  V rules   judgment checks for lists of three, choppy prose, sentence
+            shapes and sentences said twice
 
 An ID ending in W is the warning half of a rule that was split: the narrow
 form blocks and the common form warns (R02 blocks, R02W warns).
@@ -28,7 +28,9 @@ How the check reads a draft:
     skipped (Seamless, Synergy Health), and so is a capitalized pair at the
     start of a sentence (Robust Intelligence)
   - every dash character counts as a dash, except an en dash in a number
-    range like 2019–2021
+    range like 2019–2021, and an en dash or hyphen between two range ends
+    outside a sentence, like a resume's "Mar 2019 – Present" line or
+    "Hours: Mon–Fri"; an em dash always counts
   - a name joined by + or & (Foster + Partners) is read as a name, even in
     a heading written in title case
   - names and terms passed with --keep are skipped anywhere, even where
@@ -40,6 +42,8 @@ How the check reads a draft:
     and only when the draft runs above the rate in edited human writing
   - the last three items of a list of four or more aren't counted as a list
     of three
+  - a sentence of six words or more that comes back word for word in the
+    same piece warns once for each repeat (V08)
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -61,7 +65,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.5"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.6"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -84,17 +88,20 @@ LI = frozenset(["linkedin"])
 #   "sentence"  only at the start of a sentence
 #   "mid"       only inside a sentence, never at its start
 # keep, when set, is a function (line, match) that returns False for a hit
-# the pattern can't rule out by itself, like "leverage" used as a noun.
+# the pattern can't rule out by itself, like "leverage" used as a noun. With
+# block_keep, it also gets the block the line came from, so it can tell a
+# heading, a table row or a label line from a sentence (R01, since 1.6).
 # rate and min_hits mark a rule that warns once per draft, only when the
 # draft has at least min_hits hits and more than `rate` per 1,000 words.
 
 
 def rule(rid, section, label, pattern, note, surfaces=ALL, where="any", ci=True,
-         pos="any", keep=None, rate=None, min_hits=2):
+         pos="any", keep=None, rate=None, min_hits=2, block_keep=False):
     return {
         "id": rid, "section": section, "label": label, "pattern": pattern,
         "note": note, "surfaces": frozenset(surfaces), "where": where, "ci": ci,
         "pos": pos, "keep": keep, "rate": rate, "min_hits": min_hits,
+        "block_keep": block_keep,
     }
 
 
@@ -231,24 +238,127 @@ def _overall_opens_sentence(line, m):
     return not m.group(0).lower().startswith("overall") or at_sentence_start(line, m.start())
 
 
-def _not_a_number_range(line, m):
+# Words that can end a range outside a sentence (R01, since 1.6): a month, a
+# day of the week or a season, written out or short ("Mar", "Sept.", "Mon",
+# "Fall"), "Present", "Current" or "Now", and "a.m." or "p.m." after a
+# number. A word with a digit in it ("2019", "8:30") ends one too.
+_RANGE_WORD = re.compile(
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|"
+    r"oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|mon(?:day)?|tue(?:s(?:day)?)?|wed(?:nesday)?|"
+    r"thu(?:r(?:s(?:day)?)?)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?|spring|summer|fall|autumn|winter)\.?",
+    re.IGNORECASE)
+_RANGE_NOW = re.compile(r"present|current|now", re.IGNORECASE)
+_TIME_MARK = re.compile(r"[ap]\.?m\.?", re.IGNORECASE)
+_EDGE_MARKS = "()[]{}|*_\"'\u201c\u201d\u2018\u2019,;"
+# What sets one part of a line off from the next: a bar, a middle dot or a
+# bullet between spaces, or a tab ("Nurse Manager | Mar 2019 – Present").
+_LINE_PART = re.compile(r"\s[|\u00b7\u2022]\s|\t")
+_DASH_CHARS = "\u2012\u2013\u2212-\u2010\u2011\ufe63\uff0d\u2500"
+
+
+def _range_end(tok, before=""):
+    """True when a word can end a range: a word with a digit in it, a month,
+    a day of the week or a season, written out or short ("Mar", "Sept.",
+    "Mon", "Fall"), "Present", "Current" or "Now", or "a.m." after a number
+    ("8 a.m."). `before` is the text before the word."""
+    t = tok.strip(_EDGE_MARKS)
+    if not t:
+        return False
+    if re.search(r"\d", t) or _RANGE_NOW.fullmatch(t):
+        return True
+    if t[0].isupper() and _RANGE_WORD.fullmatch(t):
+        return True
+    return bool(_TIME_MARK.fullmatch(t)) and bool(re.search(r"\d\s*$", before))
+
+
+def _reads_like_a_title(text):
+    """True when no word in the text is a lowercase word other than a small
+    one ("of", "and", "the") or a range end ("present", "a.m."), the way a
+    resume's title and date line reads ("Nurse Manager, Emergency Department
+    | Mar 2019 – Present"). "We're open Mon–Fri" and "since Mar 2019" read
+    as a sentence."""
+    for w in text.split():
+        t = w.strip(_EDGE_MARKS + ".:")
+        if not t or not re.search(r"[^\W_]", t):
+            continue                      # a dash, a bar or a bullet
+        if t[0].isupper() or re.search(r"\d", t) or t.lower() in _SMALL_WORDS:
+            continue
+        if _RANGE_NOW.fullmatch(t) or _TIME_MARK.fullmatch(t):
+            continue
+        return False
+    return True
+
+
+def _ends_a_sentence(text):
+    """True when the text ends on a period, question mark, exclamation mark,
+    colon or semicolon, not counting closing marks or a time's "a.m." or
+    "p.m." ("Mon–Fri, 8 a.m.–5 p.m.")."""
+    t = re.sub(r"[\"')\]*_\u201d\u2019\s]+$", "", text)
+    if re.search(r"(?:^|\s|\d)[ap]\.m\.$", t, re.IGNORECASE):
+        return False
+    return bool(re.search(r"[.!?:;]$", t))
+
+
+def _range_outside_prose(line, m, block):
+    """True when the dash at m joins two range ends outside a sentence: in a
+    heading or a table row, on a label line whose value reads like a title
+    ("Hours: Mon–Fri, 8 a.m.–5 p.m."), or on a line that doesn't end like a
+    sentence, where the part of the line that holds the range reads like a
+    title and the lines around it don't carry a sentence on ("Nurse Manager
+    | Mar 2019 – Present", "Jun 2014 – Feb 2019"). The part of the line runs
+    between bars, middle dots or bullets ("Mar 2019 – Present · 5 yrs")."""
+    before = line[:m.start()]
+    left = re.search(r"(\S+)\s*$", before)
+    right = re.match(r"\s*(\S+)", line[m.end():m.end() + 80])
+    if not (left and right and _range_end(left.group(1), before[:left.start()]) and _range_end(right.group(1))):
+        return False
+    kind = block["kind"]
+    if kind in ("heading", "table"):
+        return True
+    starts = [off for off, _n in block["starts"]]
+    k = max(i for i, off in enumerate(starts) if off <= m.start())
+    a = starts[k]
+    z = starts[k + 1] - 1 if k + 1 < len(starts) else len(line)
+    src = line[a:z]
+    if kind == "label":
+        return _reads_like_a_title(src.split(":", 1)[1] if ":" in src else src)
+    if _ends_a_sentence(src):
+        return False
+    if k + 1 < len(starts) and line[starts[k + 1]:starts[k + 1] + 1].islower():
+        return False                      # the next line carries the sentence on
+    if k > 0:
+        prev = line[starts[k - 1]:a - 1]
+        if not _ends_a_sentence(prev) and not _reads_like_a_title(prev):
+            return False                  # the line before leads into this one
+    lo, hi = m.start() - a, m.end() - a
+    cut = max([p.end() for p in _LINE_PART.finditer(src[:lo])] or [0])
+    nxt = _LINE_PART.search(src, hi)
+    return _reads_like_a_title(src[cut:nxt.start() if nxt else len(src)])
+
+
+def _not_a_number_range(line, m, block=None):
     """False for a dash that isn't a dash in the sentence: an en dash, figure
     dash, minus sign or hyphen between two numbers (2019–2021, $5–$10, Q1–Q3,
     pages 10--12), a dash standing in for an empty table cell, a bullet at
-    the start of a line, and a command flag typed as --surface."""
+    the start of a line, and a command flag typed as --surface. Since 1.6, an
+    en dash or a hyphen between two range ends passes outside a sentence
+    too ("Nurse Manager | Mar 2019 – Present", "Hours: Mon–Fri"); see
+    _range_outside_prose. An em dash never passes."""
     hit = m.group(0)
     before = line[:m.start()]
     left = re.search(r"(\S+)\s*$", before[-80:])
     right = re.match(r"\s*(\S+)", line[m.end():m.end() + 80])
     if (left and left.group(1).endswith("|")) or (right and right.group(1).startswith("|")):
         return False                      # a dash standing in for an empty table cell
-    if hit.strip() and hit.strip()[0] in "\u2012\u2013\u2212-\u2010\u2011\ufe63\uff0d\u2500":
+    if hit.strip() and hit.strip()[0] in _DASH_CHARS:
         if not before.strip():
             return False                  # a bullet at the start of a line
         if left and right and re.search(r"\d", left.group(1)) and re.search(r"\d", right.group(1)):
             return False                  # a number range, or arithmetic
         if hit == "\u2212" and line[m.end():m.end() + 1].isdigit():
             return False                  # a minus sign: -5 degrees
+        if block is not None and len(hit.strip()) == 1 and _range_outside_prose(line, m, block):
+            return False                  # a range outside a sentence: Mar 2019 – Present
     if hit == "--":
         return not ((not before or before[-1].isspace()) and line[m.end():m.end() + 1].isalpha())
     return True
@@ -372,7 +482,7 @@ HARD = [
     rule("R01", "voice", "em dash or other dash",
          r"[\u2012\u2013\u2014\u2015\u2212\u2e3a\u2e3b\u2e40\ufe58\ufe31\ufe32]|(?<=\S)[ \t]+[-\u2010\u2011\ufe63\uff0d\u2500][ \t]+(?=\S)|(?<!-)-{2,3}(?!-)",
          "no dash of any kind, and no double hyphen or spaced hyphen typed as one; a period, comma, colon, or semicolon",
-         keep=_not_a_number_range),
+         keep=_not_a_number_range, block_keep=True),
     rule("R02", "voice", "negative corollary",
          r"\bnot\s+(?:just|simply|merely)\b[^.!?;]*\bbut\b|,\s*not\s+(?:just|merely)\b|\b(?:is|are|was|were|do|does|did)\s+not\s+just\b|\b(?:isn|aren|wasn|weren|do|does|did)n?'?t\s+just\b",
          "state the positive claim directly"),
@@ -505,10 +615,21 @@ WARN = [
     rule("R19", "voice", "borrowed framework",
          r"\borganizational\s+antibodies\b|\bblue\s+ocean\b|\bjobs[- ]to[- ]be[- ]done\b",
          "use original language, or attribute it"),
+    # Narrowed in 1.6 to the idioms, where "the room" or "the table" stands
+    # for the people in it. Before, a real place warned too ("the emergency
+    # room", "a pivot table", "the table below"): 126 hits in 944,440 words
+    # of edited human writing, and in red-team drafts mostly literal rooms
+    # and tables. Other vague places go by reading (tells.md).
     rule("R44", "voice",
-         "the vague place",
-         r"\b(?:the|a|that|this|any|our|your|every|one|whole|same)\s+(?:(?!(?:the|a|an|that|this)\b)\w+\s+){0,2}(?:room|table)\b(?!\s+of\s+contents)|\b(?:in|into|around|across|to|at|on|from)\s+the\s+(?:room|table)\b|\bbrings?\s+to\s+the\s+table\b|\bstanding\s+in\s+the\s+room\b",
-         "a real, named place, or one the sentence itself just built"),
+         "'the room' or 'the table' as an idiom",
+         r"\b(?:everyone|everybody|someone|somebody|anyone|anybody|no\s+one|nobody|people|person|voices?|smartest\s+\w+|only\s+\w+)\s+in\s+the\s+room\b"
+         r"|\b(?:kept|keep|keeps|keeping|work|works|worked|working|own|owns|owned|owning|hold|holds|held|holding|win|wins|won|winning|lose|loses|lost|losing|read|reads|reading)\s+the\s+room\b"
+         r"|\bthe\s+room\s+(?:went|fell|grew|got|turned|laughed|knew|felt|agreed|was\s+(?:silent|quiet|electric|tense))\b"
+         r"|\b(?:a\s+)?seats?\s+at\s+the\s+table\b"
+         r"|\b(?:bring|brings|bringing|brought)\s+(?:[\w'-]+\s+){0,6}to\s+the\s+table\b"
+         r"|\bstanding\s+in\s+the\s+room\b"
+         r"|\bthe\s+room\s+where\b",
+         "name the people and what they did: 'the council agreed', not 'the room agreed'"),
     # Moved from blocks in 1.4: good human writing uses these often enough
     # that a block would strip good sentences.
     rule("R02W", "voice", "'not only X, but Y'",
@@ -1031,6 +1152,43 @@ def short_after_long(text):
             and b[:1] not in "\"'"]
 
 
+# A sentence ends at a period, question mark or exclamation mark, with any
+# closing marks, before a space (V08), but not at a title or an initial
+# ("Mr. Speaker", "John A. Notte") or before a lowercase word ("e.g. the").
+_SENTENCE_END = re.compile(r"[.!?]+[\"')\]*_]*\s+")
+_NOT_AN_END = re.compile(r"(?:\b(?:Mr|Mrs|Ms|Mx|Dr|Prof|Rev|Hon|Gen|Gov|Sen|Rep|Sgt|Capt|Col|Lt|St|Mt|Ft|Jr|Sr|"
+                         r"No|vs|Inc|Co|Corp|Ltd)|(?<![\w.])[A-Z])\.$")
+
+
+def repeated_sentences(blocks):
+    """V08: a sentence of six words or more that comes back word for word in
+    the same piece, compared in lower case with the punctuation dropped.
+    Returns (line, sentence) for each repeat after the first, so a sentence
+    said three times gives two. Reads paragraphs, list items, label lines
+    and a letter's greeting and sign-off, with words inside quotation marks
+    counted, since the writer chooses to quote a line twice. Headings,
+    tables, block quotes and code don't count."""
+    seen, out = set(), []
+    for b in blocks:
+        if b["kind"] not in ("text", "item", "label", "single"):
+            continue
+        raw = b["raw"]
+        cuts = [0] + [e.end() for e in _SENTENCE_END.finditer(raw)
+                      if not _NOT_AN_END.search(raw[:e.start() + 1]) and not raw[e.end():e.end() + 1].islower()]
+        cuts.append(len(raw))
+        for a, z in zip(cuts, cuts[1:]):
+            words = _words_of(raw[a:z])
+            if len(words) < 6:
+                continue
+            key = " ".join(words)
+            if key in seen:
+                lead = len(raw[a:z]) - len(raw[a:z].lstrip())
+                out.append((_line_at(b, a + lead), raw[a:z].strip()))
+            else:
+                seen.add(key)
+    return out
+
+
 def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep=()):
     """Checks that need the whole draft. Returns (hard, warn) lists of
     (line, label, hit, note) tuples; line 0 means the whole draft. Names and
@@ -1084,6 +1242,10 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
                      f"{len(flat)} in {words} words, {1000.0 * len(flat) / words:.1f} per 1,000, where 9 in 10 pieces "
                      f"of edited human writing stay at or under {V06_RATE:g}: {shown}",
                      "fold the point into the long sentence, or cut the short line if it only restates it"))
+    for ln, s in (repeated_sentences(blocks) if "V08" not in skip else []):
+        warn.append((ln, "V08 sentence repeated word for word", s if len(s) <= 120 else s[:117] + "...",
+                     "say it once; keep a repeat only for a stated reason, like a refrain or a line the user asked "
+                     "for in two places"))
     if lengths and "V03" not in skip:
         short_share = sum(1 for n in lengths if n <= 10) / len(lengths)
         avg = sum(lengths) / len(lengths)
@@ -1192,7 +1354,7 @@ def scan_blocks(blocks, rules, surface, text, keep=()):
             for m in _compiled(r).finditer(line):
                 if r["pos"] != "any" and at_sentence_start(raw, m.start()) != (r["pos"] == "sentence"):
                     continue
-                if r["keep"] is not None and not r["keep"](raw, m):
+                if r["keep"] is not None and not (r["keep"](raw, m, b) if r["block_keep"] else r["keep"](raw, m)):
                     continue
                 if is_name(raw, m):
                     continue
@@ -1220,7 +1382,7 @@ def read_text(path):
 
 def rule_ids():
     """Every ID the check can report, for --skip."""
-    return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04", "V06"}
+    return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04", "V06", "V08"}
 
 
 def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
@@ -1323,6 +1485,7 @@ def main(argv=None):
         print(f"RATE\tV06\tjudgment\tshort flat line after a long one\tall\tdraft\tabove {V06_RATE:g} per 1,000 words")
         print(f"WARN\tV03\tjudgment\tchoppy overall\tall\tdraft")
         print(f"WARN\tV04\tjudgment\tstaccato layout\tall\tdraft")
+        print(f"WARN\tV08\tjudgment\tsentence repeated word for word\tall\tdraft")
         return 0
     skip = frozenset(s.strip().upper() for s in args.skip.split(",") if s.strip())
     unknown = sorted(skip - rule_ids())
