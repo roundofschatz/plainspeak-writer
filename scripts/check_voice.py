@@ -305,7 +305,7 @@ def _range_outside_prose(line, m, block):
     heading or a table row, on a label line whose value reads like a title
     ("Hours: Mon–Fri, 8 a.m.–5 p.m."), or on a line that doesn't end like a
     sentence, where the part of the line that holds the range reads like a
-    title and the lines around it don't carry a sentence on ("Nurse Manager
+    title and the lines around it don't go on with a sentence ("Nurse Manager
     | Mar 2019 – Present", "Jun 2014 – Feb 2019"). The part of the line runs
     between bars, middle dots or bullets ("Mar 2019 – Present · 5 yrs")."""
     before = line[:m.start()]
@@ -326,7 +326,7 @@ def _range_outside_prose(line, m, block):
     if _ends_a_sentence(src):
         return False
     if k + 1 < len(starts) and line[starts[k + 1]:starts[k + 1] + 1].islower():
-        return False                      # the next line carries the sentence on
+        return False                      # the next line goes on with the sentence
     if k > 0:
         prev = line[starts[k - 1]:a - 1]
         if not _ends_a_sentence(prev) and not _reads_like_a_title(prev):
