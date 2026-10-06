@@ -260,8 +260,9 @@ def _range_end(tok, before=""):
     """True when a word can end a range: a word with a digit in it, a month,
     a day of the week or a season, written out or short ("Mar", "Sept.",
     "Mon", "Fall"), "Present", "Current" or "Now", or "a.m." after a number
-    ("8 a.m."). `before` is the text before the word."""
-    t = tok.strip(_EDGE_MARKS)
+    ("8 a.m."). `before` is the text before the word. A colon after the word
+    doesn't count ("Mon–Fri: 9 a.m. to 5 p.m.")."""
+    t = tok.strip(_EDGE_MARKS + ":")
     if not t:
         return False
     if re.search(r"\d", t) or _RANGE_NOW.fullmatch(t):
