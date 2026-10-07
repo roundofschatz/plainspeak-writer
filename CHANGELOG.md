@@ -2,6 +2,14 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.6.1 · The notes don't state a format's length as a fact
+Why: in 1.6's test on a Windows machine, 4 of 8 drafts of two LinkedIn jobs ended with a note that gave this skill's own 150-to-300-word range as a fact about LinkedIn ("LinkedIn posts usually run 150–300 words"), a fact the user didn't give. A scan of every red-team draft's notes found the same habit in every build since 1.4, in cover letters too ("the usual 250–450 range for a cover letter"), in about 1 draft in 20. It never reached a piece, and the fresh reader didn't catch it, since it isn't a fact about the user's world. Most came where the user's own sample posts were shorter than the format's range and the draft explained why it matched them.
+
+- Changed: Step 4 of SKILL.md. The format guide's range is a requirement unless the user's own samples run to a different length; then theirs sets it. Before, the range held even against the user's samples, so a draft that matched them explained the gap in its notes.
+- Changed: Step 7. A piece gets filled when it's under the length Step 4 sets, where it said "the range or the number the user asked for".
+- Added: to Step 7, that nothing from the format guides goes in the notes as a fact about the format, like a length range. The ranges are this skill's settings.
+- Changed: the checker's version to 1.6.1, to match the skill. No rule changed.
+
 ## 1.6 · Resume dates pass, and each sentence is said once
 Why: three rules got in the way of real work. Resumes write their dates as "Mar 2019 – Present", and R01 blocked every one of those lines, so no resume could pass the check. R44 warned on real rooms and tables ("the emergency room", "a pivot table") as well as the idioms it was meant for. And the skill treated a user's own past writing as a sound to match, never as sentences to reuse, while the rule this skill now follows is that a sentence may move from one piece to another when it states the same proven fact and is still true, and that no sentence repeats word for word within one piece. The rates below are per 10,000 words: edited human writing is 944,440 words, the 72 drafts Claude wrote without the skill in the red-team test are 31,829, the 72 made with 1.4 are 27,320, and the 60 made with 1.5 in its last test round are 16,113.
 
