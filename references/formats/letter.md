@@ -18,6 +18,7 @@ Strong letters often move in four parts. They open on the reader's world, named 
 - Open with the connection between their need and your work. Skip the throat-clearing, like "I'm writing to express my interest" or "I hope this finds you well."
 - Give two or three pieces of evidence from the user's material, each with a named firm, a number or a result, and tie each one to something the reader needs. Where the user gave fewer, leave a slot for the writer's own example.
 - Close with one clear ask: a call, a meeting or a reply. Give it a length or a date only when the user did: "a call next week" needs the user's week, and "a short call" needs nothing. The invitation is the last sentence. Performed-warmth closers ("Thank you for your consideration", "I look forward to the opportunity to discuss") go.
+- Sign with the name the user gave for the sender, or end on `[your name]` when they gave none. A name you know only from their account or from memory doesn't count, since they may be writing for someone else.
 
 ## Length
 

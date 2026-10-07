@@ -2,6 +2,13 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.6.2 · The notes the reader saw, and a sign-off from the user's own name
+Why: in 1.6.1's test on a Windows machine, the one fact the user didn't give in a run of 30 red-team jobs sat in a note written after the fresh reader's check. The reader saw "NOTES: (none)", and a note written afterward credited Tapestry's sales growth to Coach. 1.6's test on that machine had two more notes added after the check. Step 7 already said not to add to the notes after the reader's check, but a bracket that comes from the reader's cuts needs a line in the notes, and drafts kept writing new lines. In 1.6.1's tests, one of six cover letters whose user gave no name was signed with the name on the account running the test, which Claude Code shows each session "to identify the user". When the user writes for someone else, that puts the wrong name on the letter.
+
+- Changed: in Step 7 of SKILL.md, "don't add to the notes after the reader's check" to: the notes you deliver are the ones the reader saw, and when a line changes or comes in after the check, like the line for a new bracket, Step 6 runs again with the piece and the new notes.
+- Added: to letter.md, that a letter is signed with the name the user gave for the sender, or ends on `[your name]` when they gave none. A name known only from the account or from memory doesn't count, since the user may be writing for someone else.
+- Changed: the checker's version to 1.6.2, to match the skill. No rule changed.
+
 ## 1.6.1 · The notes don't state a format's length as a fact
 Why: in 1.6's test on a Windows machine, 4 of 8 drafts of two LinkedIn jobs ended with a note that gave this skill's own 150-to-300-word range as a fact about LinkedIn ("LinkedIn posts usually run 150–300 words"), a fact the user didn't give. A scan of every red-team draft's notes found the same habit in every build since 1.4, in cover letters too ("the usual 250–450 range for a cover letter"), in about 1 draft in 20. It never reached a piece, and the fresh reader didn't catch it, since it isn't a fact about the user's world. Most came where the user's own sample posts were shorter than the format's range and the draft explained why it matched them.
 
