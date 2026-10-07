@@ -10,7 +10,7 @@ A post opens in insightful mode when it offers a reframe, or persuasive mode whe
 
 ## Length and shape
 
-- A take or response post runs 150 to 300 words.
+- A take or response post runs 150 to 300 words. When the user shares posts of their own, match their length instead.
 - Keep paragraphs short, one to three full sentences each. Don't write one sentence per line, because that layout is the platform's most common AI and ghostwriter tell.
 - No headers, bold text, emoji bullets or numbered lists unless the content is a list.
 - Hashtags are optional. Use one or two only when they name a real event or community.
