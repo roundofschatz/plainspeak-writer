@@ -113,6 +113,10 @@ Pull requests are welcome when they keep to these rules:
 
 To add a format, create `references/formats/<name>.md` with what the reader needs, the sequence of modes, length and limits, and the check settings. Then list it in Step 3 of `SKILL.md`.
 
+## Author
+
+Ryan Schatzman · [LinkedIn](https://www.linkedin.com/in/ryanschatzman)
+
 ## License
 
 Plainspeak Writer is released under the MIT License. See `LICENSE` for the terms.

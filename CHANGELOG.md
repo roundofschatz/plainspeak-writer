@@ -2,6 +2,17 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.7.1 · The author's name
+Why: on October 8, 2026, the skill's owner asked to be credited by name as the creator of this skill, resume-ops and job-seeker-ops, with the same credit in all three, and to keep the name out of everything the tools write and out of every example. Until now the license credited "The Plainspeak Writer contributors", and nothing named the author.
+
+- Changed: the copyright line in LICENSE names the owner, Ryan Schatzman. MIT asks every copy to keep that line, so the credit goes wherever the skill goes. Who owns the work doesn't change.
+- Added: an Author section in the README, before the license, with the name and a LinkedIn link. It has no job title or city, the same credit as resume-ops 2.4.2 and job-seeker-ops 0.4.2.
+- Changed: the checker's version to 1.7.1, to match the skill. No rule changed. Its script differs from 1.7's in that one line, and SKILL.md and every file under `references/` are the same as 1.7's.
+
+The README's rule against personal details in any file still holds. The name is a credit line, and no rule, example, sample or test uses it, so it appears in nothing the skill writes.
+
+The test: on SKILL.md, tells.md and a test cover letter, 1.7.1's checker gives the same report as 1.7's on the letter, general and LinkedIn surfaces, apart from the line that names its version.
+
 ## 1.7 · Letters that sound like a person wrote them
 Why: on October 7, 2026, the skill's owner compared test cover letters written with 1.6.2 against ones written without it, and marked four habits that read as AI, in letters that cleared every check: a "what" clause standing in for a noun ("by what the unit tests showed"), a sentence that points back instead of saying the thing ("and that's the coaching I'd bring"), a phrase that says nothing ("help their math teachers do what ours did"), and sentences that all run long, where a letter written without the skill had more variety. The counts below come from the red team's sets: 944,440 words of edited human writing, 12 published human pieces (two of them cover letters), and the 586 drafts the red team holds, 94 of them letters; and from the test letters, five written with 1.6.2 and two without any skill.
 
