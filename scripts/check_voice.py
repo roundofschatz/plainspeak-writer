@@ -9,7 +9,7 @@ only, no other file or tool needed.
             use them far more often than human writers do (U01 has that
             evidence and blocks since 1.5)
   V rules   judgment checks for lists of three, choppy prose, sentence
-            shapes and sentences said twice
+            shapes, sentences said twice and a letter's sentence length
 
 An ID ending in W is the warning half of a rule that was split: the narrow
 form blocks and the common form warns (R02 blocks, R02W warns).
@@ -38,12 +38,17 @@ How the check reads a draft:
   - a divider or cut line made of hyphens (- - - - or a scissors mark and
     hyphens) is a rule line, not a dash
   - label lines ("Budget: $40K.") are skipped by the colon check
-  - common habits (R09, R41, P10, V01, V02, V05, V06) warn once per draft,
-    and only when the draft runs above the rate in edited human writing
+  - common habits (R09, R41, P10, V01, V02, V05, V06, and V10 off letters)
+    warn once per draft, and only when the draft runs above the rate in
+    edited human writing
   - the last three items of a list of four or more aren't counted as a list
     of three
   - a sentence of six words or more that comes back word for word in the
     same piece warns once for each repeat (V08)
+  - in a letter, three habits warn: a clause standing in for a noun ("by
+    what the unit tests showed", V10) and a sentence that points back
+    ("and that's the coaching I'd bring", V11) at each use, and sentences
+    that all run long, once (V09)
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -65,7 +70,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.6.2"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.7"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -93,15 +98,17 @@ LI = frozenset(["linkedin"])
 # heading, a table row or a label line from a sentence (R01, since 1.6).
 # rate and min_hits mark a rule that warns once per draft, only when the
 # draft has at least min_hits hits and more than `rate` per 1,000 words.
+# per_hit names the surfaces where such a rule warns at every hit instead,
+# like a WARN rule (V10 on letters, since 1.7).
 
 
 def rule(rid, section, label, pattern, note, surfaces=ALL, where="any", ci=True,
-         pos="any", keep=None, rate=None, min_hits=2, block_keep=False):
+         pos="any", keep=None, rate=None, min_hits=2, block_keep=False, per_hit=frozenset()):
     return {
         "id": rid, "section": section, "label": label, "pattern": pattern,
         "note": note, "surfaces": frozenset(surfaces), "where": where, "ci": ci,
         "pos": pos, "keep": keep, "rate": rate, "min_hits": min_hits,
-        "block_keep": block_keep,
+        "block_keep": block_keep, "per_hit": frozenset(per_hit),
     }
 
 
@@ -162,6 +169,27 @@ def _names_nothing(line, m):
         return False
     words = re.findall(r"[A-Za-z][\w'-]*", s)
     return not any(w[0].isupper() and w not in _SELF_WORDS for w in words[1:])
+
+
+def _what_clause(line, m, block):
+    """V10: a "what" clause in a sentence, not in a heading, a table, a
+    label line or a bracketed slot for the user to fill ("[What the survey
+    found]"), where it names what goes in the slot."""
+    if block["kind"] in ("heading", "table", "label"):
+        return False
+    before = line[:m.start()]
+    return before.count("[") <= before.count("]")
+
+
+def _points_back(line, m):
+    """V11: "that's" or "this is" at the start of a sentence, after a
+    semicolon or a colon, or after "and", "but" or "so", where it points
+    back at what came before ("and that's the coaching I'd bring")."""
+    if at_sentence_start(line, m.start()):
+        return True
+    if line[:m.start()].rstrip().endswith((";", ":")):
+        return True
+    return _prev_word(line, m.start()) in ("and", "but", "so")
 
 
 def _prev_word(line, start):
@@ -827,6 +855,17 @@ WARN += [
          r"\b(?:I|I've|I'm|I'd|My|We|We've|We're|Our)\b[^.!?]*[.!?]",
          "name the tool, the number, the audience or the example the user gave, or cut the claim",
          surfaces=LRLB, pos="sentence", ci=False, keep=_names_nothing),
+    # Added in 1.7, on letters only: "that's" or "this is" pointing back at
+    # the sentence before instead of saying the thing ("and that's the
+    # coaching I'd bring", "That's the work I'd lead"). Speeches use "This is
+    # the..." for emphasis, so it isn't a general sign of AI writing, but in
+    # a letter it stands where the claim should be. Human cover letters had
+    # none; Claude's letters with the skill had it in 11 of 85 red-team
+    # drafts. The written-out "that is the..." warns everywhere under R40.
+    rule("V11", "judgment", "'that's the' pointing back",
+         r"\b(?:that's|this\s+is)\s+(?:the|what|how|why|where|exactly)\b(?:\s+[\w'-]+){0,3}",
+         "make the thing the subject: 'I'd bring that coaching', not 'and that's the coaching I'd bring'",
+         surfaces=L, keep=_points_back),
 ]
 
 # ---------------------------------------------------------------- RATE ----
@@ -835,6 +874,9 @@ WARN += [
 # or under, per 1,000 words.
 V05_RATE = 2.5
 V06_RATE = 5.0
+# Set in 1.7 the same way. Nine in ten human pieces have no "what the X did"
+# at all, so the limit is 0 and the two-hit minimum decides (V10).
+V10_RATE = 0.0
 
 # Habits good writers also use. Each warns once per draft, only when the
 # draft has at least two hits and runs above the rate that more than nine in
@@ -872,12 +914,42 @@ RATE = [
          r"|\bit(?:'s|\s+is|\s+was)\s+(?:a|an|the|what|this|that|how|why|where|who)\b",
          "name the thing as the subject, or join the sentence to the one before",
          rate=V05_RATE, pos="sentence"),
+    # Added in 1.7: a "what" clause standing in for a noun ("by what the unit
+    # tests showed", "what your second shift would need"). Edited human
+    # writing has 28 in 944,440 words and never two in one piece, so
+    # nine in ten pieces have none, the limit is 0 and the two-hit minimum
+    # decides. On letters each one warns. "Said", "says", "told" and "tell"
+    # aren't in the list: "write down what the sign told you" names a real
+    # message. Slots in brackets, headings, tables and label lines don't count,
+    # and "is" or "was" can't sit inside the noun ("what the sign was meant
+    # to say" names the message too).
+    rule("V10", "judgment", "'what the X did' standing in for a noun",
+         r"\bwhat\s+(?:the|your|our|their|my|his|her|its|this|that|these|those)\s+"
+         r"(?:(?!(?:is|was|are|were|be|been|being)\b)[\w'-]+\s+){1,3}?"
+         r"(?:(?:would|will|could|might|must|can|should)\s+)?(?:(?:have|has|had)\s+)?"
+         r"(?:show(?:s|ed|n)?|did|does|do|need(?:s|ed)?|mean(?:s|t)?|found|finds|want(?:s|ed)?|"
+         r"got|gets|has|had|have|made|makes)\b",
+         "name the thing ('the unit test results', not 'what the unit tests showed'), or put the actor first "
+         "('the unit tests showed which students to regroup')",
+         rate=V10_RATE, keep=_what_clause, block_keep=True, per_hit=L),
 ]
 
 # V02 judged per 1,000 words: runs of three or more short sentences. Long
 # human pieces almost always contain one run, so a single run in a long
 # piece says nothing. Set from the same human writing as the rates above.
 V02_RATE = 2.5
+
+# V09, added in 1.7: a letter's sentences that all run long. It reads the
+# body only, between the greeting and the sign-off, with bracketed slots out,
+# and warns once in a body of 200 words or more when fewer than 10% of its
+# sentences run 10 words or fewer, or they average more than 24 words. The
+# five test letters job-seeker-ops wrote with 1.6.2 had 0% to 7% short and
+# averages of 23.5 to 30.9; the two it wrote without the skill had 22% and
+# 28%, averaging 18.7 and 16.3. It sits beside V03, which warns at the other
+# end (more than 35% short, or an average under 14).
+V09_FLOOR = 0.10
+V09_CEILING = 24.0
+V09_MIN_WORDS = 200
 
 # Colon reveals, moderated heavily. A colon
 # followed by three words or fewer that end the sentence. The first one in a
@@ -1190,6 +1262,33 @@ def repeated_sentences(blocks):
     return out
 
 
+def letter_sentences(blocks, text):
+    """V09: a letter's body sentences. The body runs from the greeting to the
+    sign-off, or from the first line of sixty characters or more when there's
+    no greeting, so the header, the greeting, the sign-off and the name under
+    it don't count. Paragraphs only, with bracketed slots taken out, split
+    into sentences the way V08 splits them."""
+    start = None
+    for i, b in enumerate(blocks):
+        if b["kind"] == "single" and _is_salutation(b["text"], b["text"].strip()):
+            start = i + 1
+            break
+    if start is None:
+        start = opener_block(blocks, text, "letter") or 0
+    out = []
+    for b in blocks[start:]:
+        if b["kind"] == "single" and _SIGNOFF.match(b["text"]):
+            break
+        if b["kind"] != "text":
+            continue
+        raw = " ".join(re.sub(r"\[[^\]]*\]", "", b["raw"]).split())
+        cuts = [0] + [e.end() for e in _SENTENCE_END.finditer(raw)
+                      if not _NOT_AN_END.search(raw[:e.start() + 1]) and not raw[e.end():e.end() + 1].islower()]
+        cuts.append(len(raw))
+        out += [raw[a:z].strip() for a, z in zip(cuts, cuts[1:]) if re.search(r"[A-Za-z0-9]", raw[a:z])]
+    return out
+
+
 def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep=()):
     """Checks that need the whole draft. Returns (hard, warn) lists of
     (line, label, hit, note) tuples; line 0 means the whole draft. Names and
@@ -1212,7 +1311,7 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
 
     words = word_count(text)
     for r in RATE:
-        if r["id"] in skip or surface not in r["surfaces"]:
+        if r["id"] in skip or surface not in r["surfaces"] or surface in r["per_hit"]:
             continue
         found = scan_blocks(blocks, [r], surface, text, keep)
         n = len(found)
@@ -1254,6 +1353,18 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
             warn.append((0, "V03 choppy overall",
                          f"average {avg:.1f} words per sentence, {short_share:.0%} of 10 words or fewer",
                          "staccato is a tactic, never the default"))
+    if surface == "letter" and "V09" not in skip:
+        body = [len(x.split()) for x in letter_sentences(blocks, text)]
+        if sum(body) >= V09_MIN_WORDS:
+            short_share = sum(1 for n in body if n <= 10) / len(body)
+            avg = sum(body) / len(body)
+            if short_share < V09_FLOOR or avg > V09_CEILING:
+                warn.append((0, "V09 long and flat",
+                             f"{len(body)} sentences in the body, average {avg:.1f} words, {short_share:.0%} of "
+                             f"10 words or fewer, where a letter wants at least {V09_FLOOR:.0%} short and an "
+                             f"average of {V09_CEILING:g} or less",
+                             "split a long sentence where it holds two facts, so one stands short; a short line "
+                             "that only restates the long one before it trips V06"))
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", prose_only(text)) if p.strip()]
     if len(paragraphs) >= 4 and "V04" not in skip:
         one = [p for p in paragraphs if len(re.findall(r"[.!?](\s|$)", p)) <= 1 and not p.startswith("[")]
@@ -1383,7 +1494,7 @@ def read_text(path):
 
 def rule_ids():
     """Every ID the check can report, for --skip."""
-    return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04", "V06", "V08"}
+    return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04", "V06", "V08", "V09"}
 
 
 def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
@@ -1396,6 +1507,7 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
     words = {}
     hard_rules = [r for r in HARD if r["id"] not in skip]
     warn_rules = [r for r in WARN if r["id"] not in skip]
+    warn_rules += [r for r in RATE if r["id"] not in skip and surface in r["per_hit"]]
     for path in paths:
         try:
             text = read_text(path)
@@ -1479,7 +1591,9 @@ def main(argv=None):
         for cls, rules in (("HARD", HARD), ("WARN", WARN), ("RATE", RATE)):
             for r in rules:
                 surf = "all" if r["surfaces"] == ALL else ",".join(s for s in SURFACES if s in r["surfaces"])
-                extra = f"\tabove {r['rate']:g} per 1,000 words" if r["rate"] else ""
+                extra = f"\tabove {r['rate']:g} per 1,000 words" if r["rate"] is not None else ""
+                if r["per_hit"]:
+                    extra += f", every hit on {','.join(s for s in SURFACES if s in r['per_hit'])}"
                 print(f"{cls}\t{r['id']}\t{r['section']}\t{r['label']}\t{surf}\t{r['where']}{extra}")
         print(f"HARD\tS04\truling\tcolon reveal, the second in a piece (the first warns)\tall\tdraft")
         print(f"RATE\tV02\tjudgment\truns of three or more short sentences\tall\tdraft\tabove {V02_RATE:g} per 1,000 words")
@@ -1487,6 +1601,7 @@ def main(argv=None):
         print(f"WARN\tV03\tjudgment\tchoppy overall\tall\tdraft")
         print(f"WARN\tV04\tjudgment\tstaccato layout\tall\tdraft")
         print(f"WARN\tV08\tjudgment\tsentence repeated word for word\tall\tdraft")
+        print(f"WARN\tV09\tjudgment\tsentences long and flat\tletter\tdraft")
         return 0
     skip = frozenset(s.strip().upper() for s in args.skip.split(",") if s.strip())
     unknown = sorted(skip - rule_ids())
