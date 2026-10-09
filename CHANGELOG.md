@@ -2,6 +2,14 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.7.2 · Where to get it as a plugin
+Why: on October 9, 2026, the skill's owner asked for the plugin marketplace to say plainly which tool to install, since job-seeker-ops includes its own copy of this skill, and someone who installs both gets two writing skills. The marketplace's descriptions say so now, and this README says it too.
+
+- Added: to the README's Install section, a paragraph on installing the skill as a plugin from the `roundofschatz` marketplace, and on not installing it beside job-seeker-ops, which already includes it.
+- Changed: the checker's version to 1.7.2, to match the skill. No rule changed, and SKILL.md and every file under `references/` are the same as 1.7.1's.
+
+The test: on SKILL.md and tells.md, 1.7.2's checker gives the same report as 1.7.1's on the letter and general surfaces, apart from the line that names its version.
+
 ## 1.7.1 · The author's name
 Why: on October 8, 2026, the skill's owner asked to be credited by name as the creator of this skill, resume-ops and job-seeker-ops, with the same credit in all three, and to keep the name out of everything the tools write and out of every example. Until now the license credited "The Plainspeak Writer contributors", and nothing named the author.
 

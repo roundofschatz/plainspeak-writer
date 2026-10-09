@@ -70,7 +70,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.7.1"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.7.2"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)

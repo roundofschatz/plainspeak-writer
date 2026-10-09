@@ -61,6 +61,8 @@ The repository is the skill folder, so the folder name has to stay `plainspeak-w
 
 Custom skills don't sync between Claude products, so install Plainspeak Writer in each one you use.
 
+**As a plugin.** Plainspeak Writer is also listed in the author's plugin marketplace, `roundofschatz`, which lives in the job-seeker-ops repository. In Claude Code, run `/plugin marketplace add roundofschatz/job-seeker-ops`, then `/plugin install plainspeak-writer@roundofschatz`. In the Claude app, add the same marketplace under Customize, Plugins. job-seeker-ops, a job-search plugin in the same marketplace, already includes a copy of Plainspeak Writer. If you use job-seeker-ops, don't install this one as well, since Claude would see two writing skills and could load either.
+
 **Claude Code.** Clone the repository into your skills folder. Use `~/.claude/skills/` for every project, or `.claude/skills/` inside one project:
 
 ```bash
