@@ -1,0 +1,78 @@
+# Publishes a release when a new version lands on main: the tag, the release
+# and plainspeak-writer.zip for Claude.ai. A cloud session can push to main but
+# can't push tags or publish releases, so this runs on GitHub's side. The
+# version is the checker's __version__, and the newest CHANGELOG.md entry has
+# to be that version, so a release never ships under a number the changelog
+# doesn't describe.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the version and write the notes
+        id: version
+        run: |
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+
+          def full(v):
+              parts = v.split(".")
+              return ".".join(parts + ["0"] * (3 - len(parts)))
+
+          code = Path("scripts/check_voice.py").read_text(encoding="utf-8")
+          version = re.search(r'^__version__\s*=\s*"([\d.]+)"', code, re.M).group(1)
+          log = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          entries = re.split(r"(?m)^## ", log)[1:]
+          heading, _, body = entries[0].partition("\n")
+          newest = heading.split(" ", 1)[0]
+          if full(newest) != full(version):
+              raise SystemExit(f"CHANGELOG.md's newest entry is {newest}, and the checker says {version}.")
+          notes = [body.strip(),
+                   "For Claude.ai, download `plainspeak-writer.zip` below and upload it under Skills in "
+                   "Settings. For Claude Code and the API, follow the install steps in the README.",
+                   "Every change, and the reason for it, is logged in CHANGELOG.md."]
+          Path("notes.md").write_text("\n\n".join(notes) + "\n", encoding="utf-8")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"version={version}\n")
+          PY
+          version=$(grep -m1 -oP '^__version__\s*=\s*"\K[\d.]+' scripts/check_voice.py)
+          if gh release view "v$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "v$version already has a release, so there's nothing to do."
+            echo "released=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build the zip from this commit and check it runs
+        if: steps.version.outputs.released != 'true'
+        run: |
+          mkdir -p dist
+          git archive --format=zip --prefix=plainspeak-writer/ -o dist/plainspeak-writer.zip HEAD \
+            SKILL.md README.md CHANGELOG.md LICENSE references scripts
+          cd dist && unzip -q plainspeak-writer.zip
+          python3 plainspeak-writer/scripts/check_voice.py --surface general plainspeak-writer/SKILL.md
+
+      - name: Publish the release
+        if: steps.version.outputs.released != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release create "v$VERSION" dist/plainspeak-writer.zip \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "Plainspeak Writer $VERSION" --notes-file notes.md

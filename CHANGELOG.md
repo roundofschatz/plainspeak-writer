@@ -10,6 +10,7 @@ Why: with the owner's published paper as the sample, 1.8's V09 warned on the let
 - Changed: full-check.md's V09 entry, tells.md's "Long, flat prose" row, SKILL.md's Step 5, the README's "The check" and the letters guide, which say the same.
 - Fixed: a comment in the checker gave the paper's average as 25.9. The right figure is 24.4, with 8% of its sentences at 10 words or fewer; the first count had split sentences at the wrong place around curly quotes.
 - Changed: the checker's version to 1.8.1.
+- Added: `.github/workflows/release.yml`. When a new version lands on main, it makes the tag and the release on GitHub's side, with `plainspeak-writer.zip` for Claude.ai and the newest entry here as the notes. A cloud session can push to main but can't make tags or releases, so 1.8's tag had to be made by hand. The workflow stops when the newest entry here and the checker's version don't match, and it runs the checker from the zip before publishing. This release is its first.
 
 The test: with the owner's paper as the sample, V09 now warns on one of the six drafts and letters from the comparison, the one averaging 30.8 words a sentence. The two at 24.5 and 26.2 no longer trip it, and the three under 24.4 never did. On the same six with no sample, and on SKILL.md, tells.md and the letters guide on each surface, 1.8.1 gives the same report as 1.8.0, apart from the version line.
 
