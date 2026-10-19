@@ -105,6 +105,12 @@ The check reads the draft the way a reader does. It joins lines that wrap mid-se
 python scripts/check_voice.py --surface linkedin --keep "Seamless,statistically significant" draft.txt
 ```
 
+For a letter, pass the user's own writing samples with `--sample`, once per file. With 500 words or more of their prose, the check holds the letter to the samples' own average sentence length instead of its default, so a writer who writes long isn't pushed into short sentences:
+
+```bash
+python scripts/check_voice.py --surface letter --sample essay.txt letter.txt
+```
+
 A name the check still flags stays as written under the order above. Habits that good writers also use, like long forms ("it is"), lists of three, "just" and hedge words, warn once per draft, and only when the draft uses them well above the rate in edited human writing.
 
 Rewrite every block, except where the order in "When instructions conflict" keeps the words: a quote, name, number or technical term exactly as given, or something the user asked for. When the user's own instructions, samples or guide allow something a rule blocks, keep it in the piece, run the check with `--skip` and the rule's ID (`--skip R01` for dashes), and don't take it out and leave it for the user to put back. Fix every warning, or clear it with a stated reason. Repeat until nothing blocks.

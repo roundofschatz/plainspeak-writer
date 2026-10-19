@@ -48,7 +48,10 @@ How the check reads a draft:
   - in a letter, three habits warn: a clause standing in for a noun ("by
     what the unit tests showed", V10) and a sentence that points back
     ("and that's the coaching I'd bring", V11) at each use, and sentences
-    that all run long, once (V09)
+    that all run long, once (V09); with --sample, V09 takes its limit from
+    the writer's own writing instead
+  - on a letter, V04 and V09 read the body only, so a header's lines, the
+    greeting and the sign-off never count as paragraphs or sentences
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -62,6 +65,9 @@ How the check reads a draft:
     python check_voice.py --keep "Seamless,Foster + Partners" draft.md
                                                         # skip the user's own names
                                                         # and terms anywhere
+    python check_voice.py --surface letter --sample my_essay.txt letter.txt
+                                                        # V09 follows the writer's
+                                                        # own sentence length
 
 HARD blocks a draft. WARN needs a stated reason to keep. Exit 0 when no HARD
 hit, 1 when any HARD hit, 2 on a usage error.
@@ -70,7 +76,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.7.2"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.8.0"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -951,6 +957,14 @@ V09_FLOOR = 0.10
 V09_CEILING = 24.0
 V09_MIN_WORDS = 200
 
+# V09 with a sample, added in 1.8: when the writer gives at least 500 words
+# of their own prose with --sample, the ceiling becomes the sample's own
+# average sentence length and the 10% floor comes off. In the owner's
+# October 2026 test, both letter drafts that obeyed the default V09 were sent
+# back as choppy, and the owner's own published paper (25.9 words a sentence)
+# trips the default ceiling itself.
+V09_SAMPLE_MIN_WORDS = 500
+
 # Colon reveals, moderated heavily. A colon
 # followed by three words or fewer that end the sentence. The first one in a
 # draft warns; every one after it blocks. A colon before a list or an
@@ -1262,12 +1276,11 @@ def repeated_sentences(blocks):
     return out
 
 
-def letter_sentences(blocks, text):
-    """V09: a letter's body sentences. The body runs from the greeting to the
-    sign-off, or from the first line of sixty characters or more when there's
-    no greeting, so the header, the greeting, the sign-off and the name under
-    it don't count. Paragraphs only, with bracketed slots taken out, split
-    into sentences the way V08 splits them."""
+def letter_body(blocks, text):
+    """A letter's body paragraphs, for V04 and V09. The body runs from the
+    greeting to the sign-off, or from the first line of sixty characters or
+    more when there's no greeting, so the header, the greeting, the sign-off
+    and the name under it don't count. Paragraphs only."""
     start = None
     for i, b in enumerate(blocks):
         if b["kind"] == "single" and _is_salutation(b["text"], b["text"].strip()):
@@ -1279,17 +1292,65 @@ def letter_sentences(blocks, text):
     for b in blocks[start:]:
         if b["kind"] == "single" and _SIGNOFF.match(b["text"]):
             break
-        if b["kind"] != "text":
-            continue
-        raw = " ".join(re.sub(r"\[[^\]]*\]", "", b["raw"]).split())
-        cuts = [0] + [e.end() for e in _SENTENCE_END.finditer(raw)
-                      if not _NOT_AN_END.search(raw[:e.start() + 1]) and not raw[e.end():e.end() + 1].islower()]
-        cuts.append(len(raw))
-        out += [raw[a:z].strip() for a, z in zip(cuts, cuts[1:]) if re.search(r"[A-Za-z0-9]", raw[a:z])]
+        if b["kind"] == "text":
+            out.append(b)
     return out
 
 
-def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep=()):
+def split_sentences(raw):
+    """One paragraph's sentences, with bracketed slots taken out, split the
+    way V08 splits them."""
+    raw = " ".join(re.sub(r"\[[^\]]*\]", "", raw).split())
+    cuts = [0] + [e.end() for e in _SENTENCE_END.finditer(raw)
+                  if not _NOT_AN_END.search(raw[:e.start() + 1]) and not raw[e.end():e.end() + 1].islower()]
+    cuts.append(len(raw))
+    return [raw[a:z].strip() for a, z in zip(cuts, cuts[1:]) if re.search(r"[A-Za-z0-9]", raw[a:z])]
+
+
+def letter_sentences(blocks, text):
+    """V09: a letter's body sentences."""
+    return [x for b in letter_body(blocks, text) for x in split_sentences(b["raw"])]
+
+
+def sample_sentences(text):
+    """The sentences of a writer's own sample, for V09. A letter gives its
+    body. Anything else gives its prose paragraphs, leaving out headings,
+    list items, tables, quotes, label lines, and short lines that read as a
+    title, a question heading or a table row."""
+    blocks = blocks_of(text)
+    if any(b["kind"] == "single" and _is_salutation(b["text"], b["text"].strip()) for b in blocks):
+        return letter_sentences(blocks, text)
+    out = []
+    for b in blocks:
+        if b["kind"] != "text":
+            continue
+        t = b["raw"].strip()
+        if re.search(r"\S {3,}\S", t):
+            continue                      # a table row laid out with spaces
+        if not (re.search(r"[.!?:]['\")\]]*$", t) or re.search(r"[.!?]['\")\]]*\s+[A-Z]", t)):
+            continue                      # a title, a table row or a fragment
+        if len(t.split()) <= 12 and (t.endswith("?") or _reads_like_a_title(t)):
+            continue                      # a question heading
+        out += split_sentences(b["raw"])
+    return out
+
+
+def sample_profile(paths):
+    """The writer's samples, read together: (names, words, sentences,
+    average sentence length). Returns None when no sample was given."""
+    if not paths:
+        return None
+    lengths = []
+    for path in paths:
+        lengths += [len(x.split()) for x in sample_sentences(read_text(path))]
+    words = sum(lengths)
+    avg = words / len(lengths) if lengths else 0.0
+    return {"names": [p.replace("\\", "/").rsplit("/", 1)[-1] for p in paths],
+            "words": words, "sentences": len(lengths), "average": avg,
+            "used": words >= V09_SAMPLE_MIN_WORDS}
+
+
+def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep=(), sample=None):
     """Checks that need the whole draft. Returns (hard, warn) lists of
     (line, label, hit, note) tuples; line 0 means the whole draft. Names and
     terms in `keep` are skipped by the rate rules too."""
@@ -1358,14 +1419,24 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
         if sum(body) >= V09_MIN_WORDS:
             short_share = sum(1 for n in body if n <= 10) / len(body)
             avg = sum(body) / len(body)
-            if short_share < V09_FLOOR or avg > V09_CEILING:
+            if sample and sample["used"]:
+                if avg > sample["average"]:
+                    warn.append((0, "V09 long and flat",
+                                 f"{len(body)} sentences in the body, average {avg:.1f} words, where the writer's "
+                                 f"own sample averages {sample['average']:.1f}",
+                                 "split a long sentence where it holds two facts, or cut a proof; never cut the "
+                                 "words that join one sentence to the next"))
+            elif short_share < V09_FLOOR or avg > V09_CEILING:
                 warn.append((0, "V09 long and flat",
                              f"{len(body)} sentences in the body, average {avg:.1f} words, {short_share:.0%} of "
                              f"10 words or fewer, where a letter wants at least {V09_FLOOR:.0%} short and an "
                              f"average of {V09_CEILING:g} or less",
                              "split a long sentence where it holds two facts, so one stands short; a short line "
                              "that only restates the long one before it trips V06"))
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", prose_only(text)) if p.strip()]
+    if surface == "letter":
+        paragraphs = [b["raw"].strip() for b in letter_body(blocks, text)]
+    else:
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", prose_only(text)) if p.strip()]
     if len(paragraphs) >= 4 and "V04" not in skip:
         one = [p for p in paragraphs if len(re.findall(r"[.!?](\s|$)", p)) <= 1 and not p.startswith("[")]
         if len(one) / len(paragraphs) > 0.5:
@@ -1497,10 +1568,11 @@ def rule_ids():
     return {r["id"] for r in HARD + WARN + RATE} | {"S04", "V02", "V03", "V04", "V06", "V08", "V09"}
 
 
-def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
+def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=(), sample=None):
     """Build the report lines for the given files. Returns (lines, any_hard).
     Rules in `skip` are turned off, for what the user's own instructions,
-    samples or guide allow. Names and terms in `keep` are skipped."""
+    samples or guide allow. Names and terms in `keep` are skipped. `sample`
+    is sample_profile()'s reading of the writer's own writing, for V09."""
     out = []
     any_hard = False
     per_file = []
@@ -1519,7 +1591,7 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
         blocks = blocks_of(text)
         hard = scan_blocks(blocks, hard_rules, surface, text, keep)
         warn = scan_blocks(blocks, warn_rules, surface, text, keep)
-        dhard, dwarn = document_checks(text, surface, skip, blocks, keep)
+        dhard, dwarn = document_checks(text, surface, skip, blocks, keep, sample)
         hard += dhard
         warn += dwarn
         per_file.append((path, hard, warn))
@@ -1529,6 +1601,12 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=()):
     out.append(f"check_voice {__version__}   surface: {surface}"
                + (f"   turned off: {', '.join(sorted(skip))}" if skip else "")
                + (f"   kept as given: {', '.join(keep)}" if keep else ""))
+    if sample:
+        what = (f"V09 follows it on letters" if sample["used"] and surface == "letter"
+                else f"V09 keeps its default, since the sample needs {V09_SAMPLE_MIN_WORDS} words" if surface == "letter"
+                else "it sets V09 on the letter surface only")
+        out.append(f"sample: {', '.join(sample['names'])}, {sample['words']} words in {sample['sentences']} "
+                   f"sentences, average {sample['average']:.1f}; {what}")
     if by_rule:
         groups = {}
         for path, hard, warn in per_file:
@@ -1582,6 +1660,10 @@ def main(argv=None):
                     help="the user's own names and technical terms, separated by commas, which the check skips "
                          "anywhere (for example --keep \"Seamless,Foster + Partners\"); for a name with a comma "
                          "in it, pass its distinctive part")
+    ap.add_argument("--sample", action="append", default=[],
+                    help="a file of the writer's own writing, repeatable; with 500 words or more, a letter's "
+                         "V09 takes its limit from the sample's average sentence length and drops its "
+                         "short-sentence floor")
     ap.add_argument("--by-rule", action="store_true", help="group hits by rule across files")
     ap.add_argument("--out", help="write the report to this file (UTF-8, LF)")
     ap.add_argument("--list-rules", action="store_true", help="print the rule table and exit")
@@ -1601,7 +1683,7 @@ def main(argv=None):
         print(f"WARN\tV03\tjudgment\tchoppy overall\tall\tdraft")
         print(f"WARN\tV04\tjudgment\tstaccato layout\tall\tdraft")
         print(f"WARN\tV08\tjudgment\tsentence repeated word for word\tall\tdraft")
-        print(f"WARN\tV09\tjudgment\tsentences long and flat\tletter\tdraft")
+        print(f"WARN\tV09\tjudgment\tsentences long and flat (the sample's average with --sample)\tletter\tdraft")
         return 0
     skip = frozenset(s.strip().upper() for s in args.skip.split(",") if s.strip())
     unknown = sorted(skip - rule_ids())
@@ -1615,7 +1697,12 @@ def main(argv=None):
         return 2
 
     keep = tuple(t.strip() for v in args.keep for t in v.split(",") if t.strip())
-    lines, any_hard = report_files(args.files, args.surface, args.by_rule, skip, keep)
+    try:
+        sample = sample_profile(args.sample)
+    except OSError as e:
+        print(f"check_voice.py: cannot read the sample: {e}")
+        return 2
+    lines, any_hard = report_files(args.files, args.surface, args.by_rule, skip, keep, sample)
     report = "\n".join(lines) + "\n"
     try:
         sys.stdout.reconfigure(encoding="utf-8")
