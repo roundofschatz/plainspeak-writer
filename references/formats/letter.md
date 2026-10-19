@@ -2,7 +2,7 @@
 
 ## What the reader needs
 
-One busy person is deciding whether to reply, meet or interview you. In the first two sentences they need to know why you're writing to them in particular and what you're offering, so open with a specific fact about their company, role or recent work, and connect it to what the writer has done. Take that fact from what the user or the job posting gives you. If there isn't one, leave a slot like `[something specific about their recent work]` for the writer to fill, rather than supplying one from memory. Never tell the reader what their own posting says, like "Your posting measures this role by...", since they wrote it. Open on the fact itself.
+One busy person is deciding whether to reply, meet or interview you. In the first two sentences they need to know why you're writing to them in particular and what you're offering, so open with a specific fact about their company, role or recent work, and connect it to what the writer has done. Take that fact from what the user or the job posting gives you. If there isn't one, leave a slot like `[something specific about their recent work]` for the writer to fill, rather than supplying one from memory. Never open by telling the reader how their own posting sizes up the job, like "Your posting measures this role by...", since they wrote it. Open on the fact itself. Naming what the posting asks for, so the letter can answer each ask, is fine.
 
 ## Modes
 
