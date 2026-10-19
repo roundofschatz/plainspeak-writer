@@ -76,7 +76,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.8.0"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.8.1"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -959,11 +959,14 @@ V09_MIN_WORDS = 200
 
 # V09 with a sample, added in 1.8: when the writer gives at least 500 words
 # of their own prose with --sample, the ceiling becomes the sample's own
-# average sentence length and the 10% floor comes off. In the owner's
-# October 2026 test, both letter drafts that obeyed the default V09 were sent
-# back as choppy, and the owner's own published paper (25.9 words a sentence)
-# trips the default ceiling itself.
+# average sentence length plus two words, and the 10% floor comes off. In the
+# owner's October 2026 test, both letter drafts that obeyed the default V09
+# were sent back as choppy, and the owner's own published paper (24.4 words a
+# sentence, 8% at 10 words or fewer) trips the default rule itself. The two
+# words, added in 1.8.1, keep a letter that matches the sample from tripping
+# it by a tenth of a word.
 V09_SAMPLE_MIN_WORDS = 500
+V09_SAMPLE_MARGIN = 2
 
 # Colon reveals, moderated heavily. A colon
 # followed by three words or fewer that end the sentence. The first one in a
@@ -1420,10 +1423,11 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
             short_share = sum(1 for n in body if n <= 10) / len(body)
             avg = sum(body) / len(body)
             if sample and sample["used"]:
-                if avg > sample["average"]:
+                if avg > sample["average"] + V09_SAMPLE_MARGIN:
                     warn.append((0, "V09 long and flat",
                                  f"{len(body)} sentences in the body, average {avg:.1f} words, where the writer's "
-                                 f"own sample averages {sample['average']:.1f}",
+                                 f"own sample averages {sample['average']:.1f} and a letter may run "
+                                 f"{V09_SAMPLE_MARGIN} words over that",
                                  "split a long sentence where it holds two facts, or cut a proof; never cut the "
                                  "words that join one sentence to the next"))
             elif short_share < V09_FLOOR or avg > V09_CEILING:
@@ -1602,7 +1606,8 @@ def report_files(paths, surface, by_rule=False, skip=frozenset(), keep=(), sampl
                + (f"   turned off: {', '.join(sorted(skip))}" if skip else "")
                + (f"   kept as given: {', '.join(keep)}" if keep else ""))
     if sample:
-        what = (f"V09 follows it on letters" if sample["used"] and surface == "letter"
+        what = (f"V09 follows it on letters, up to an average of "
+                f"{sample['average'] + V09_SAMPLE_MARGIN:.1f}" if sample["used"] and surface == "letter"
                 else f"V09 keeps its default, since the sample needs {V09_SAMPLE_MIN_WORDS} words" if surface == "letter"
                 else "it sets V09 on the letter surface only")
         out.append(f"sample: {', '.join(sample['names'])}, {sample['words']} words in {sample['sentences']} "

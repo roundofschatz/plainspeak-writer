@@ -2,6 +2,17 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.8.1 · Two words to spare on a writer's own sentence length
+
+Why: with the owner's published paper as the sample, 1.8's V09 warned on the letter the owner judged best, which averaged 24.5 words a sentence against the paper's 24.4. A tenth of a word isn't a difference a reader hears. The owner ruled on October 19 that a letter may run two words over the sample's average.
+
+- Changed: V09 with a sample of 500 words or more warns only when the letter body's average sentence runs more than two words longer than the sample's. With no sample, or a shorter one, V09 is the same as in 1.7 and 1.8. The warning and the report's sample line both give the limit.
+- Changed: full-check.md's V09 entry, tells.md's "Long, flat prose" row, SKILL.md's Step 5, the README's "The check" and the letters guide, which say the same.
+- Fixed: a comment in the checker gave the paper's average as 25.9. The right figure is 24.4, with 8% of its sentences at 10 words or fewer; the first count had split sentences at the wrong place around curly quotes.
+- Changed: the checker's version to 1.8.1.
+
+The test: with the owner's paper as the sample, V09 now warns on one of the six drafts and letters from the comparison, the one averaging 30.8 words a sentence. The two at 24.5 and 26.2 no longer trip it, and the three under 24.4 never did. On the same six with no sample, and on SKILL.md, tells.md and the letters guide on each surface, 1.8.1 gives the same report as 1.8.0, apart from the version line.
+
 ## 1.8 · One claim, paragraphs that hold together, and a letter's length set by the writer
 
 Why: on October 16, 2026, the skill's owner had two sessions write a cover letter for the same posting from the same files and samples, and judged one letter much better than the other. A comparison of five drafts from the two sessions, made October 19, found that the better letter argued one claim in the writer's own words and kept each paragraph on one subject, that the writer's own sentence length mattered less than how the paragraphs held together, and that every draft the owner called choppy had been split or cut to meet a number, including V09's 10% floor. The owner ruled on the checker changes below on October 19. The comparison sits with the job-seeker-ops plugin, at `docs/2026-10-19-cover-letter-session-comparison.md` in its repository.

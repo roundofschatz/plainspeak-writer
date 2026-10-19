@@ -105,7 +105,7 @@ The check reads the draft the way a reader does. It joins lines that wrap mid-se
 python scripts/check_voice.py --surface linkedin --keep "Seamless,statistically significant" draft.txt
 ```
 
-For a letter, pass the user's own writing samples with `--sample`, once per file. With 500 words or more of their prose, the check holds the letter to the samples' own average sentence length instead of its default, so a writer who writes long isn't pushed into short sentences:
+For a letter, pass the user's own writing samples with `--sample`, once per file. With 500 words or more of their prose, the check holds the letter to the samples' own average sentence length, with two words to spare, instead of its default, so a writer who writes long isn't pushed into short sentences:
 
 ```bash
 python scripts/check_voice.py --surface letter --sample essay.txt letter.txt

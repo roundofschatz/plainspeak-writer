@@ -49,4 +49,4 @@ A referral blurb or recommendation is written in the sender's voice, not the sub
 
 ## Script check
 
-Run the full check with the `letter` surface for letters and outreach, or `blurb` for referral blurbs. When the writer shared their own writing, pass it with `--sample`: V09 then holds the letter to the sample's own average sentence length and drops its short-sentence floor.
+Run the full check with the `letter` surface for letters and outreach, or `blurb` for referral blurbs. When the writer shared their own writing, pass it with `--sample`: V09 then holds the letter to the sample's own average sentence length, with two words to spare, and drops its short-sentence floor.
