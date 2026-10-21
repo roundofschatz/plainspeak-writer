@@ -2,6 +2,26 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.9.0 · LinkedIn posts follow the evidence
+
+Why: this skill and linkedin-post-generator gave conflicting instructions on the same post. This skill barred one sentence per line and capped hashtags at two, while linkedin-post-generator's research found that posts with more paragraphs, and posts with one to three hashtags, did better. On October 21, 2026, the owner ruled that evidence of what works on LinkedIn outranks a style rule. Where linkedin-post-generator's `references/platform.md` has a finding, this skill's LinkedIn post rules follow it, and where it has none, the existing rules stand. The change covers posts only. About sections, headlines, every other surface and the general voice rules stay as they were.
+
+The LinkedIn guide, `references/formats/linkedin.md`:
+- Changed: length. A post runs 1,300 to 1,900 characters, about 200 to 320 words, in place of 150 to 300 words. Posts of 1,300 to 2,500 characters did best in 2026 data, and posts under 400 did worst. A user's own posts or stated length still win.
+- Changed: paragraphs. A post's paragraphs run one or two full sentences, with a new one at each new point, usually 10 to 14 in a post. This replaces "don't write one sentence per line" for posts, since one dataset of about 400,000 posts found that posts with more than 14 paragraphs did 66% better than posts with fewer than 7. Every sentence is still a whole sentence that follows from the one before. An About section keeps the rule it had: one to three full sentences a paragraph, and never one sentence per line.
+- Changed: hashtags. A post ends with one to three relevant ones on the last line, each naming the exact subject or a real community or event, in place of one or two optional ones. One 2026 measure found that 1 to 3 gave about 9% more reach.
+- Added: the opening. A post's point lands in the first 140 characters, the mobile "see more" fold. Story openers did best and contrarian claims next, while question openers did worst, and a story opens the post only when it stands for the post's whole point.
+- Changed: endings. The ban on "Thoughts?", "Agree?" and requests to comment, like or repost stays. A specific question about a named case or choice, one someone in the field can answer in a sentence, is now allowed.
+- Added: a line at the top saying these post rules come from linkedin-post-generator's research as of October 21, 2026, and that its `platform.md` gets updated first when LinkedIn changes.
+
+The check, `scripts/check_voice.py`, on the `linkedin` surface only:
+- Changed: V04 doesn't run there, since a post laid out with one- or two-sentence paragraphs tripped it every time. The checker can't tell a post from an About section, so the LinkedIn guide says to read an About section for one-line paragraphs by hand. V02, V03 and V06 still check the sentences themselves.
+- Changed: U16 warns at four hashtags in a row, up from three.
+- Changed: U18 let no specific question through, so "How does your firm handle the stormwater review on a Denver infill site?" warned. Now a request for comments ("I'd love to hear", "share your thoughts") always warns, and the question shapes ("how does your team handle", "what's worked for you", "curious how others") warn only when the question names no case and offers no choice. A question with a number, a name or two options joined by "or" passes.
+- Changed: full-check.md's V04, U16 and U18 entries and tells.md's row on one-line paragraphs, which say the same, and the checker's version, to 1.9.0.
+
+The test: on a 1,554-character post with 12 paragraphs of one or two sentences, a story opening of 131 characters, three hashtags on the last line and a closing question ("How does your firm handle a heat pump swap under the 2024 code, as a repair or as new work?"), 1.9.0 reports nothing on the linkedin surface, where 1.8.1 warned on V04, U16 and U18. linkedin-post-generator's own checker passes the same post. Of ten test endings, U18 now passes the five specific questions and still warns on the three generic questions and the two requests for comments. On 59 files, this skill's docs as of 1.8.1 and job-seeker-ops' test letters, resumes, postings and notes, 1.9.0 gives the same report as 1.8.1 on the letter, blurb, resume and general surfaces, apart from the version line, across all 236 runs. On the linkedin surface, the only change in those files is V04, which no longer fires on 19 of them.
+
 ## 1.8.1 · Two words to spare on a writer's own sentence length
 
 Why: with the owner's published paper as the sample, 1.8's V09 warned on the letter the owner judged best, which averaged 24.5 words a sentence against the paper's 24.4. A tenth of a word isn't a difference a reader hears. The owner ruled on October 19 that a letter may run two words over the sample's average.

@@ -52,6 +52,9 @@ How the check reads a draft:
     the writer's own writing instead
   - on a letter, V04 and V09 read the body only, so a header's lines, the
     greeting and the sign-off never count as paragraphs or sentences
+  - on LinkedIn, V04 doesn't run, since a post's paragraphs run one or two
+    full sentences, and U18 lets a specific question about a named case or
+    choice through
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -76,7 +79,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.8.1"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.9.0"   # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -196,6 +199,40 @@ def _points_back(line, m):
     if line[:m.start()].rstrip().endswith((";", ":")):
         return True
     return _prev_word(line, m.start()) in ("and", "but", "so")
+
+
+# U18's requests for comments ("I'd love to hear", "share your thoughts",
+# "tell us your story"). They count wherever they sit.
+_ASKS_FOR_COMMENTS = re.compile(r"(?:i|we)(?:'d|\s+would)\s+love|share\b|tell\b", re.IGNORECASE)
+_SENTENCE_BEFORE = re.compile(r"[.!?][\"')\]]*\s+")
+_SENTENCE_AFTER = re.compile(r"[.!?](?=[\"')\]]*(?:\s|$))")
+
+
+def _generic_bait(line, m):
+    """U18, since 1.9: a request for comments ("I'd love to hear", "share
+    your thoughts") always counts. A question shape ("how does your team
+    handle", "what's worked for you", "curious how others") counts only when
+    its sentence names no case and offers no choice. A question that holds a
+    number, a name, or two options joined by "or" passes, the way
+    linkedin.md allows a specific question about a named case or choice:
+    "How does your team handle a heat pump swap under the 2024 code?",
+    "How does your firm handle the stormwater review on a Denver infill
+    site?" and "How does your team handle a heat pump swap, as a repair or
+    as new work?" all pass, while "How does your team handle burnout?"
+    counts."""
+    if _ASKS_FOR_COMMENTS.match(m.group(0)):
+        return True
+    start = max([b.end() for b in _SENTENCE_BEFORE.finditer(line[:m.start()])] or [0])
+    end = _SENTENCE_AFTER.search(line, m.end())
+    if not end or line[end.start()] != "?":
+        return True                       # not a question
+    s = line[start:end.end()]
+    if re.search(r"\d", s):
+        return False                      # a number: the 2024 code, a 40-seat kitchen
+    words = re.findall(r"[A-Za-z][\w'-]*", s)
+    if any(w[0].isupper() and w not in _SELF_WORDS for w in words[1:]):
+        return False                      # a name: Denver, Title 24
+    return not re.search(r"\bor\s+(?!(?:you|your|yours|others|anyone|anybody|someone|not)\b)\w", s, re.IGNORECASE)
 
 
 def _prev_word(line, start):
@@ -839,10 +876,14 @@ WARN += [
          "use the plain word: improve, raise, first, largest"),
     # Added in 1.5 as warnings, for habits Claude showed in LinkedIn posts
     # written without the skill, which linkedin.md already bars. They warn
-    # until they're measured on human LinkedIn posts.
+    # until they're measured on human LinkedIn posts. Since 1.9, U16 warns at
+    # four hashtags in a row, not three: one 2026 measure found that one to
+    # three relevant tags gave about 9% more reach, and linkedin.md follows it.
+    # U18 lets a specific question through (see _generic_bait).
     rule("U16", "candidate", "hashtag block",
-         r"(?<![\w#&/])#[A-Za-z]\w*(?:[\s,]+#[A-Za-z]\w*){2,}",
-         "use one or two hashtags, and only when they name a real event or community", surfaces=LI),
+         r"(?<![\w#&/])#[A-Za-z]\w*(?:[\s,]+#[A-Za-z]\w*){3,}",
+         "use one to three hashtags on the last line, each naming the exact subject or a real community or event",
+         surfaces=LI),
     rule("U17", "candidate", "arrow or emoji bullet",
          r"^\s*" + _ARROW_EMOJI + r"\s+\S+(?:\s+\S+){0,3}",
          "write the points as sentences, or as a plain list when the content is a list", surfaces=LI),
@@ -853,7 +894,8 @@ WARN += [
          r"|\b(?:share|tell\s+(?:me|us))\s+(?:yours|your\s+(?:thoughts|experiences?|take|stories|story))\b"
          r"|\bhow\s+(?:do|does|are|is)\s+(?:you|your\s+(?:team|company|org|organization|studio|agency|firm))\s+"
          r"(?:handle|handling|approach|approaching|deal|dealing|keep|keeping|manage|managing|tackle|tackling)\b",
-         "end on the position, a concrete ask or a next step", surfaces=LI),
+         "end on the position, a concrete ask, a next step, or a specific question about a named case or choice",
+         surfaces=LI, keep=_generic_bait),
     # Added in 1.5 as a warning: one of three sentence shapes a blind reader
     # marked in AI drafts during red-team testing. The other two warn by rate
     # (V05, V06).
@@ -1437,11 +1479,15 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
                              f"average of {V09_CEILING:g} or less",
                              "split a long sentence where it holds two facts, so one stands short; a short line "
                              "that only restates the long one before it trips V06"))
+    # V04 doesn't run on LinkedIn since 1.9. A post's paragraphs run one or
+    # two full sentences, the layout one 400,000-post dataset favored
+    # (linkedin.md), so one-sentence paragraphs there aren't staccato. V02,
+    # V03 and V06 still read the sentences themselves.
     if surface == "letter":
         paragraphs = [b["raw"].strip() for b in letter_body(blocks, text)]
     else:
         paragraphs = [p.strip() for p in re.split(r"\n\s*\n", prose_only(text)) if p.strip()]
-    if len(paragraphs) >= 4 and "V04" not in skip:
+    if len(paragraphs) >= 4 and "V04" not in skip and surface != "linkedin":
         one = [p for p in paragraphs if len(re.findall(r"[.!?](\s|$)", p)) <= 1 and not p.startswith("[")]
         if len(one) / len(paragraphs) > 0.5:
             warn.append((0, "V04 staccato layout", f"{len(one)} of {len(paragraphs)} paragraphs are one sentence",
@@ -1686,7 +1732,7 @@ def main(argv=None):
         print(f"RATE\tV02\tjudgment\truns of three or more short sentences\tall\tdraft\tabove {V02_RATE:g} per 1,000 words")
         print(f"RATE\tV06\tjudgment\tshort flat line after a long one\tall\tdraft\tabove {V06_RATE:g} per 1,000 words")
         print(f"WARN\tV03\tjudgment\tchoppy overall\tall\tdraft")
-        print(f"WARN\tV04\tjudgment\tstaccato layout\tall\tdraft")
+        print(f"WARN\tV04\tjudgment\tstaccato layout\tletter,resume,blurb,general\tdraft")
         print(f"WARN\tV08\tjudgment\tsentence repeated word for word\tall\tdraft")
         print(f"WARN\tV09\tjudgment\tsentences long and flat (the sample's average with --sample)\tletter\tdraft")
         return 0
