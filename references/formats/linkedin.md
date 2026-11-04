@@ -33,6 +33,10 @@ When the post answers an event, talk or someone else's post:
 
 End on the position, a concrete ask, a next step, or a specific question about a named case or choice that someone in the field can answer in a sentence: "Did your county treat a heat pump swap under the 2024 code as a repair or as new work?" Skip the engagement bait: "Thoughts?", "Agree?", "Drop a comment below", "Who else has seen this?" and any request to comment, like or repost ("Comment YES if you agree", "Repost if this helped") all read as hunting for reach.
 
+## The sentence check
+
+Before the script check, list every sentence in the post, About section or headline beside the thing it names: a firm, a number, a tool, a person or a result. A sentence with nothing beside it ("I care deeply about meaningful work") gets its object from the list of the user's facts, or it's cut. The script can't run this check, so do it by reading.
+
 ## Script check
 
 Run the full check with the `linkedin` surface. On that surface V04 doesn't count one-sentence paragraphs, since a post's paragraphs run one or two sentences, so read an About section for one-line paragraphs yourself.

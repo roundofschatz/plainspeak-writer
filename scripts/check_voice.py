@@ -55,6 +55,9 @@ How the check reads a draft:
   - on LinkedIn, V04 doesn't run, since a post's paragraphs run one or two
     full sentences, and U18 lets a specific question about a named case or
     choice through
+  - on career writing (letters, resumes, LinkedIn and blurbs), "supported"
+    as a career verb blocks under R12, and two habits warn: naming what the
+    writer lacks (R49) and a claim hung on leaving a job (R50)
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -199,6 +202,70 @@ def _points_back(line, m):
     if line[:m.start()].rstrip().endswith((";", ":")):
         return True
     return _prev_word(line, m.start()) in ("and", "but", "so")
+
+
+def _sentence_around(line, start, end):
+    """The sentence that holds line[start:end], with the hit left out."""
+    a = max([b.end() for b in _SENTENCE_BEFORE.finditer(line[:start])] or [0])
+    z = _SENTENCE_AFTER.search(line, end)
+    return line[a:start], line[end:z.end() if z else len(line)]
+
+
+_FIRST_PERSON = re.compile(r"\b(?:I|I've|I'd|I'm|I'll|me|my|we|we've|we'd|we're|our|us)\b", re.IGNORECASE)
+_I_SUBJECT = re.compile(r"\bI(?:'ve|'d|'m|'ll|\s+[a-z])")
+_PAST_VERBS = frozenset("built ran led wrote made began started founded grew set took won sold drew taught brought "
+                        "kept found held spent shipped launched designed mapped created named".split())
+
+
+def _career_supported(line, m):
+    """R12, since 1.10: "supported" counts as a career verb when it opens a
+    sentence or a resume bullet ("Supported the brand team on three
+    launches") or follows "I" ("I supported the sales team"), never when a
+    program or a grant does the supporting ("the program supported 40
+    schools") or in the passive ("Supported by a $2M grant")."""
+    if not m.group(0).lower().startswith("supported"):
+        return True
+    if at_sentence_start(line, m.start()):
+        return True
+    return bool(re.search(r"\bI(?:\s+(?:also|have|had|then|mainly|mostly|primarily|once|first))?\s+$|\bI've\s+(?:also\s+)?$",
+                          line[max(0, m.start() - 40):m.start()]))
+
+
+def _timing_brag(line, m):
+    """R21's "before X existed", since 1.10, when the sentence is about the
+    writer: it holds I, we, my or our, or it opens on a past-tense verb the
+    way a resume bullet does ("Built a booking model before the platform
+    existed"). "Records from before the county existed" passes."""
+    if not m.group(0).lower().endswith("existed"):
+        return True
+    before, after = _sentence_around(line, m.start(), m.end())
+    if _FIRST_PERSON.search(before + " " + after):
+        return True
+    first = re.match(r"\W*([A-Za-z][\w'-]*)", before + m.group(0))
+    w = first.group(1).lower() if first else ""
+    return w in _PAST_VERBS or (w.endswith("ed") and len(w) > 4)
+
+
+def _names_a_lack(line, m):
+    """R49, since 1.10: "no prior experience" passes when it's a
+    requirement someone else sets ("the workshop needs no prior experience",
+    "no prior experience is needed")."""
+    s = m.group(0).lower()
+    if not s.startswith("no "):
+        return True
+    if re.search(r"\b(?:needs?|requires?|required|with|takes?)\s+$", line[max(0, m.start() - 20):m.start()], re.IGNORECASE):
+        return False
+    return not re.match(r"\s+(?:is\s+|was\s+)?(?:needed|required|necessary)\b", line[m.end():m.end() + 30], re.IGNORECASE)
+
+
+def _hung_on_leaving(line, m):
+    """R50, since 1.10: "after I left" counts when the claim is about the
+    old work going on without the writer ("After I left, the system kept
+    running"). It passes when the writer is the subject of the rest of the
+    sentence, which makes it a timeline ("Since I left Acme, I've run my
+    own practice")."""
+    before, after = _sentence_around(line, m.start(), m.end())
+    return not _I_SUBJECT.search(before + " " + after)
 
 
 # U18's requests for comments ("I'd love to hear", "share your thoughts",
@@ -586,8 +653,9 @@ HARD = [
          r"\b(?:significant(?:ly)?|substantial(?:ly)?)\s+(?:improv\w+|growth|increas\w+|impact|results?|gains?|value)\b",
          "the metric, or the named project, person, or place"),
     rule("R12", "voice", "passive career verb",
-         r"\bcontributed\s+to\b|\bhelped\s+(?:to\s+)?develop\b|\bwas\s+involved\s+in\b|\bplayed\s+a\s+role\b",
-         "built, founded, generated, trained, led, wrote, designed", surfaces=LRLB),
+         r"\bcontributed\s+to\b|\bhelped\s+(?:to\s+)?develop\b|\bwas\s+involved\s+in\b|\bplayed\s+a\s+role\b"
+         r"|\bsupported\b(?!\s+by\b)",
+         "built, founded, generated, trained, led, wrote, designed", surfaces=LRLB, keep=_career_supported),
     rule("R16", "voice",
          "person-anchor or pathology ending",
          r"\bwithout\s+(?:any\s+)?(?:authority|institutional\s+support)\b|\bswear\s+word\b|\bhad\s+to\s+do\s+it\s+myself\b|\bdidn'?t\s+want\s+innovation\b|\btreated\s+as\s+overhead\b",
@@ -599,8 +667,9 @@ HARD = [
          r"\bactually\b",
          "cut it; the sentence stops performing", pos="sentence"),
     rule("R21", "voice", "timing-brag flourish",
-         r"\b(?:years|a\s+decade|decades|months)\s+before\s+(?:the|it|anyone|that|this)\b|\bbefore\s+the\s+role\s+had\s+a\s+(?:title|name)\b|\bbefore\s+(?:it|that|this)\s+had\s+a\s+(?:name|title)\b|\bbefore\s+[^.]{0,40}\s+was\s+a\s+thing\b",
-         "cut the timing clause; keep the claim"),
+         r"\b(?:years|a\s+decade|decades|months)\s+before\s+(?:the|it|anyone|that|this)\b|\bbefore\s+the\s+role\s+had\s+a\s+(?:title|name)\b|\bbefore\s+(?:it|that|this)\s+had\s+a\s+(?:name|title)\b|\bbefore\s+[^.]{0,40}\s+was\s+a\s+thing\b"
+         r"|\bbefore\s+[^.,;:!?]{0,40}?\s+existed\b",
+         "cut the timing clause; keep the claim", keep=_timing_brag),
     rule("R22", "voice", "AI-speak verb + preposition",
          r"(?<!\bmany\s)(?<!\bthe\s)(?<!\bother\s)(?<!\btheir\s)(?<!\bour\s)(?<!\bforeign\s)(?<!\ball\s)(?<!\bthose\s)(?<!\bthese\s)(?<!\bdistant\s)\blands\s+with\b|\b(?:will|to|can|could|should|may|might|would|won't|didn't|doesn't|not)\s+land\s+with\b|\bstood\s+up\s+(?:a|an|the)\b|\bstand(?:s|ing)?\s+up\s+(?:a|an|the)\b|\brunning\s+that\s+loop\b|\bon\s+the\s+read\b",
          "plain speech: works, built, doing that work"),
@@ -718,6 +787,34 @@ WARN = [
          "the indirect claim",
          r"(?:^|[.;:!?,]\s+|\b(?:think|know|believe|and|but|because|so|since|which|why|is)\s+)that\s+is\s+(?:the|what|where|how|why|exactly|precisely)\b",
          "say the thing: 'I've done that work'; 'that's' where speech contracts"),
+    # Added in 1.10 as warnings, on career writing only. A post or an essay
+    # can say "I haven't seen this before"; a letter, a resume, a profile or
+    # a blurb that names what the writer lacks hands the reader a reason to
+    # say no. R49 looks for a missing capability ("I haven't led", "I'd have
+    # to learn", "no formal experience", "I lack"), not every "haven't".
+    rule("R49", "voice", "naming what the writer lacks",
+         r"\bI\s+(?:haven'?t|have\s+not|hadn'?t|had\s+not|have\s+never|had\s+never|never)\s+(?:yet\s+|actually\s+)?"
+         r"(?:led|run|ran|managed|held|used|worked\s+(?:in|at|on|for)|owned|supervised|hired|sold|launched|shipped|"
+         r"been\s+(?:a|an|in)|had\s+(?:a|the)|done\s+(?:a|this|that))\b"
+         r"|\bI've\s+never\s+(?:led|run|managed|held|used|worked\s+(?:in|at|on|for)|owned|supervised|hired|sold|"
+         r"launched|shipped|been\s+(?:a|an|in)|had\s+(?:a|the)|done\s+(?:a|this|that))\b"
+         r"|\bI(?:'d|'ll|\s+would|\s+will)?\s+(?:have|need)\s+to\s+learn\b"
+         r"|\bI(?:'d|'ll|\s+(?:can|could|would|will))\s+(?:quickly\s+)?(?:learn|pick\s+up|ramp\s+up\s+on)\s+"
+         r"(?:[\w'-]+\s+){0,3}?(?:in|within)\s+(?:a|one|two|three|four|six|a\s+few|\d+)\s+(?:days?|weeks?|months?|quarters?)\b"
+         r"|\bno\s+(?:prior|formal|direct|previous|hands-on)\s+(?:[\w-]+\s+){0,2}?(?:experience|background)\b"
+         r"|\bI\s+(?:don'?t|do\s+not)\s+(?:yet\s+)?have\s+(?:(?:any|the|a|much|direct|formal|prior|hands-on|deep)\s+){0,3}"
+         r"(?:experience|background|title|degree|certification|credential)s?\b"
+         r"|\bI\s+(?:don'?t|do\s+not)\s+(?:match|meet|check)\s+(?:every|all|each)\b"
+         r"|\bI\s+(?:don'?t|do\s+not)\s+come\s+from\b|\bnot\s+from\s+the\s+[\w-]+\s+(?:industry|world|sector)\b"
+         r"|\bI\s+lack\b|\bmy\s+lack\s+of\b"
+         r"|\bon\s+paper,?\s+I\b|\b(?:look|match|fit|seem)\w*\s+(?:[\w'-]+\s+){0,4}?on\s+paper\b",
+         "leave the gap off the page; lead with what the writer has done",
+         surfaces=LRLB, keep=_names_a_lack),
+    rule("R50", "voice", "claim hung on leaving a job",
+         r"\b(?:after|since|when|once)\s+I\s+(?:left|moved\s+on|stepped\s+(?:away|down)|was\s+gone)\b"
+         r"|\b(?:after|since)\s+my\s+(?:departure|exit)\b|\bpost-departure\b",
+         "credit what the work did while the writer was there; leaving is never the proof",
+         surfaces=LRLB, keep=_hung_on_leaving),
 ]
 
 # ------------------------------------------------ skill additions ----

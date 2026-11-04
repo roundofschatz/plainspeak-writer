@@ -38,7 +38,7 @@ A length is a guide for what to put in, never a reason to cut words. Never split
 
 ## Rules for letters about the writer
 
-- Never name a gap, a shortcoming, a missing title or something the writer "has to learn." On a letter those read as reasons to say no.
+- Never name a gap, a shortcoming, a missing title or something the writer "has to learn." On a letter those read as reasons to say no. The script warns on the common forms under R49 ("I haven't led", "I'd have to learn", "no formal experience"), and on a claim hung on leaving a job under R50 ("after I left, the system kept running").
 - Write the writer's own part in first person, at its real size: "I built", "I ran", "I cut" for what they did. When someone else led, name the lead: "My manager led the project, and I ran the survey of 200 customers." Never "contributed to" or "helped develop", and never a bigger verb than the user's own: "ran a survey" doesn't become "designed the research". A strength stays at the user's size ("good with difficult customers" doesn't become "best with angry ones"), and a requirement from the posting isn't the writer's experience unless the user says it is.
 - End every claim on a result the user gave, or a slot for the writer's own result, never on the writer's difficulty or the old firm's flaws.
 - When the user shares letters they've sent, those are the model for sentences.
@@ -46,6 +46,8 @@ A length is a guide for what to put in, never a reason to cut words. Never split
 ## Letters written for someone else to send
 
 A referral blurb or recommendation is written in the sender's voice, not the subject's. Keep it simple and general, say from an outside view why the sender recommends the person, and leave out any resume detail the reader can find elsewhere. Never mention a gap or a shortcoming.
+
+Before the script check, list every sentence in the blurb beside the thing it names: a firm, a number, a tool, a person or a result. A sentence with nothing beside it ("She cares deeply about meaningful work") gets its object from the list of the user's facts, or it's cut. The script can't run this check, so do it by reading.
 
 ## Script check
 
