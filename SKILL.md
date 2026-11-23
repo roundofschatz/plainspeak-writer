@@ -72,7 +72,7 @@ Aim for the professional middle: direct, specific, warm, relational and never de
 - Say each point once and trust the reader. No sentence appears twice in one piece, word for word.
 - Connect the sentences, so each one hands the reader to the next. Use short sentences for stacked proof points and diagnoses, and longer ones for narrative and argument. A run of short, separate statements reads choppy.
 - End every claim about the work on a result the user gave, or on the claim itself when they gave none, and end the piece somewhere only this piece could end. State results as firmly and as widely as the user did: "builds got 18% faster" doesn't become "faster for every engineer, forever".
-- Use contractions, and write "you" when talking to the reader.
+- Use contractions, except on a resume, where convention spells them out, and write "you" when talking to the reader.
 
 Leaderly and inspiring writing comes from substance: a clear position, owned results and a next step. Writing for those qualities directly produces keynote language.
 

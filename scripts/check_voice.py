@@ -55,6 +55,10 @@ How the check reads a draft:
   - on LinkedIn, V04 doesn't run, since a post's paragraphs run one or two
     full sentences, and U18 lets a specific question about a named case or
     choice through
+  - on a resume, V04, V01 and R41 don't run, since bullets are one sentence,
+    lists are the content, and resume guides spell contractions out; and
+    "contributed to" warns (R12W) instead of blocking, since it's the honest
+    verb when the writer's part was one of several (1.10)
 
     python check_voice.py draft.md                      # general (the default)
     python check_voice.py --surface letter   draft.md   # letters, outreach
@@ -79,7 +83,7 @@ import argparse
 import re
 import sys
 
-__version__ = "1.9.0"   # matches the skill's version in CHANGELOG.md
+__version__ = "1.10.0"  # matches the skill's version in CHANGELOG.md
 
 SURFACES = ("letter", "resume", "linkedin", "blurb", "general")
 ALL = frozenset(SURFACES)
@@ -88,6 +92,8 @@ RLB = frozenset(["resume", "linkedin", "blurb"])
 LB = frozenset(["letter", "blurb"])
 LRLB = frozenset(["letter", "resume", "linkedin", "blurb"])
 LI = frozenset(["linkedin"])
+NOT_RESUME = frozenset(["letter", "linkedin", "blurb", "general"])
+LLB = frozenset(["letter", "linkedin", "blurb"])
 
 # where a rule runs (lines that wrap inside a paragraph are joined first, so
 # a "line" here is a whole paragraph, list item, heading or table row):
@@ -587,7 +593,7 @@ HARD = [
          "the metric, or the named project, person, or place"),
     rule("R12", "voice", "passive career verb",
          r"\bcontributed\s+to\b|\bhelped\s+(?:to\s+)?develop\b|\bwas\s+involved\s+in\b|\bplayed\s+a\s+role\b",
-         "built, founded, generated, trained, led, wrote, designed", surfaces=LRLB),
+         "built, founded, generated, trained, led, wrote, designed", surfaces=LLB),
     rule("R16", "voice",
          "person-anchor or pathology ending",
          r"\bwithout\s+(?:any\s+)?(?:authority|institutional\s+support)\b|\bswear\s+word\b|\bhad\s+to\s+do\s+it\s+myself\b|\bdidn'?t\s+want\s+innovation\b|\btreated\s+as\s+overhead\b",
@@ -809,6 +815,13 @@ HARD += [
          "say the point instead of announcing it"),
 ]
 
+# 1.10: on a resume, "contributed to" is the honest verb when the part was one
+# of several, so it warns there instead of blocking (resume-ops 2.6.0).
+WARN.append(rule("R12W", "voice", "partial-credit verb on a resume",
+                 r"\bcontributed\s+to\b|\bhelped\s+(?:to\s+)?develop\b|\bwas\s+involved\s+in\b|\bplayed\s+a\s+role\b",
+                 "keep it only when the part was one of several; otherwise say what you did",
+                 surfaces=frozenset(["resume"])))
+
 WARN += [
     rule("P02", "plain language", "filler word",
          r"\b(?:simply|literally)\b",
@@ -939,7 +952,7 @@ RATE = [
          "uncontracted form where speech contracts",
          r"\b(?:that\s+is|it\s+is|I\s+have|I\s+am|I\s+would|I\s+will|I\s+had|do\s+not|does\s+not|did\s+not|cannot|is\s+not|are\s+not|was\s+not|were\s+not|there\s+is|here\s+is|what\s+is|has\s+not|have\s+not|had\s+not|will\s+not|would\s+not|could\s+not|should\s+not|he\s+is|she\s+is|we\s+are|they\s+are|you\s+are|we\s+have|they\s+have|you\s+have|we\s+will|we\s+would|let\s+us)\b",
          "contract unless the emphasis is deliberate",
-         rate=19.0),
+         rate=19.0, surfaces=NOT_RESUME),   # 1.10: a resume spells contractions out
     rule("P10", "plain language", "'just' as filler",
          r"\bjust\b",
          "keep it only if it changes the meaning",
@@ -948,7 +961,7 @@ RATE = [
     rule("V01", "judgment", "list of three",
          r"(?<!, )\b[\w'-]+(?:\s[\w'-]+){0,3},\s[\w'-]+(?:\s[\w'-]+){0,3},?\s(?:and|or)\s[\w'-]+(?:\s[\w'-]+){0,3}\b",
          "fine when each item is specific and does work; a crutch when it stands in for logic",
-         rate=8.0, keep=_is_list_of_three),
+         rate=8.0, keep=_is_list_of_three, surfaces=NOT_RESUME),   # 1.10: the rate comes from prose; a resume is mostly lists
     # Added in 1.5: a sentence that opens on "That", "This" or "It" and points
     # back instead of naming the thing ("That deliverable is a document...",
     # "This is what I meant"). Human writers do it about as often as AI
@@ -1482,12 +1495,13 @@ def document_checks(text, surface="general", skip=frozenset(), blocks=None, keep
     # V04 doesn't run on LinkedIn since 1.9. A post's paragraphs run one or
     # two full sentences, the layout one 400,000-post dataset favored
     # (linkedin.md), so one-sentence paragraphs there aren't staccato. V02,
-    # V03 and V06 still read the sentences themselves.
+    # V03 and V06 still read the sentences themselves. Nor on resumes since
+    # 1.10: a resume's bullets are one sentence by convention.
     if surface == "letter":
         paragraphs = [b["raw"].strip() for b in letter_body(blocks, text)]
     else:
         paragraphs = [p.strip() for p in re.split(r"\n\s*\n", prose_only(text)) if p.strip()]
-    if len(paragraphs) >= 4 and "V04" not in skip and surface != "linkedin":
+    if len(paragraphs) >= 4 and "V04" not in skip and surface not in ("linkedin", "resume"):
         one = [p for p in paragraphs if len(re.findall(r"[.!?](\s|$)", p)) <= 1 and not p.startswith("[")]
         if len(one) / len(paragraphs) > 0.5:
             warn.append((0, "V04 staccato layout", f"{len(one)} of {len(paragraphs)} paragraphs are one sentence",
@@ -1732,7 +1746,7 @@ def main(argv=None):
         print(f"RATE\tV02\tjudgment\truns of three or more short sentences\tall\tdraft\tabove {V02_RATE:g} per 1,000 words")
         print(f"RATE\tV06\tjudgment\tshort flat line after a long one\tall\tdraft\tabove {V06_RATE:g} per 1,000 words")
         print(f"WARN\tV03\tjudgment\tchoppy overall\tall\tdraft")
-        print(f"WARN\tV04\tjudgment\tstaccato layout\tletter,resume,blurb,general\tdraft")
+        print(f"WARN\tV04\tjudgment\tstaccato layout\tletter,blurb,general\tdraft")
         print(f"WARN\tV08\tjudgment\tsentence repeated word for word\tall\tdraft")
         print(f"WARN\tV09\tjudgment\tsentences long and flat (the sample's average with --sample)\tletter\tdraft")
         return 0

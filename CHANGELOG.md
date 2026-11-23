@@ -2,6 +2,19 @@
 
 Every change to this skill is logged here: what was added, changed or removed, and why. Nothing comes out without a line saying so. Newest first.
 
+## 1.10.0 · The resume surface follows resume conventions
+
+Why: resume-ops's red team of November 22, 2026 ran this check on four real resumes. On every one, V04 warned that most paragraphs were one sentence and V01 warned about lists of three. A resume's bullets are one sentence by convention, and its lines are mostly lists, so both warnings measured prose habits on a page that isn't prose. The same review found that resume guides spell contractions out (Yale, Appalachian State and the University of Maryland's working-professionals guide), so R41's nudge to contract is wrong on a resume. And on a resume, "contributed to" is the honest verb when the writer's part was one of several. The owner ruled that evidence decides, not preference.
+
+The check, `scripts/check_voice.py`, on the `resume` surface only:
+- Changed: V04 and V01 don't run there. Letters, blurbs, LinkedIn and general writing keep them as before.
+- Changed: R41 doesn't run there. A resume spells contractions out; everywhere else, contractions stay the default.
+- Changed: R12 no longer blocks on a resume. A new warning, R12W, flags "contributed to", "helped (to) develop", "was involved in" and "played a role" there, to keep only when the part was one of several. R12 still blocks on letters, LinkedIn and blurbs.
+- Changed: `full-check.md`'s R12, V04, R41 and V01 entries, `tells.md`'s Allowed line and SKILL.md's line on contractions, which say the same, and the checker's version, to 1.10.0.
+- New: `tests/test_resume_surface.py`, three cases for the resume surface. The plugin copies leave `tests/` out.
+
+The test: a resume of ten one-sentence bullets reports nothing on the resume surface, where 1.9.0 warned V04. A five-sentence summary with "did not", "there is", "it is" and "they are" doesn't warn R41 on the resume surface and still does on the letter surface. "Contributed to the county trails plan" warns R12W on the resume surface and still blocks on the letter surface. The four base resumes from the red team, which 1.9.0 passed with two warnings each, pass with none.
+
 ## 1.9.0 · LinkedIn posts follow the evidence
 
 Why: this skill and linkedin-post-generator gave conflicting instructions on the same post. This skill barred one sentence per line and capped hashtags at two, while linkedin-post-generator's research found that posts with more paragraphs, and posts with one to three hashtags, did better. On October 21, 2026, the owner ruled that evidence of what works on LinkedIn outranks a style rule. Where linkedin-post-generator's `references/platform.md` has a finding, this skill's LinkedIn post rules follow it, and where it has none, the existing rules stand. The change covers posts only. About sections, headlines, every other surface and the general voice rules stay as they were.
